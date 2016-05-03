@@ -1,0 +1,13 @@
+{
+  "title" : "Enhanced Camera",
+  "type"  : "effects",
+  "tags"  : [ "roleplay", "realism" ],
+  "ignore": [
+    ".git/*",
+    ".gitignore",
+    "icon.xcf",
+    "Makefile",
+    "README.md",
+    "enhanced_camera.*"
+  ]
+}
