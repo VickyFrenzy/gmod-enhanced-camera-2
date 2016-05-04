@@ -60,10 +60,6 @@ local function GetPlayerModel()
 end
 
 local function ShouldDrawBody()
-  -- Don"t show if exiting a vehicle
-  if LocalPlayer():InVehicle() and LocalPlayer():GetActiveWeapon():IsWeaponVisible() then
-    return false
-  end
   return cvarEnabled:GetBool() and
     (not LocalPlayer():InVehicle() or cvarVehicle:GetBool()) and
     IsValid(body.entity) and
@@ -178,7 +174,8 @@ function body:OnPoseChange()
   end
 
   -- Hide appropriate limbs
-  local name = LocalPlayer():GetActiveWeapon():GetClass()
+  local wep = LocalPlayer():GetActiveWeapon()
+  local name = IsValid(wep) and wep:GetClass() or ""
   local bone = self.entity:LookupBone("ValveBiped.Bip01_Head1")
   self.entity:ManipulateBoneScale(bone, vector_origin)
   self.entity:ManipulateBonePosition(bone, Vector(-128, 128, 0))
@@ -259,10 +256,14 @@ function body:Think(maxSeqGroundSpeed)
 
   -- Test if reload is finished
   if self.reloading then
-    local time = CurTime()
-    if weapon:GetNextPrimaryFire() < time and weapon:GetNextSecondaryFire() < time then
+    if IsValid(weapon) then
+      local time = CurTime()
+      if weapon:GetNextPrimaryFire() < time and weapon:GetNextSecondaryFire() < time then
+        self.reloading = false
+        poseChanged = true
+      end
+    else
       self.reloading = false
-      poseChanged = true
     end
   end
 
@@ -356,16 +357,8 @@ function body:Render()
   end
 end
 
-hook.Add("PostDrawViewModel", "EnhancedCamera:PostDrawViewModel", function()
-   if not LocalPlayer():InVehicle() then
-    body:Render()
-  end
-end)
-
 hook.Add("RenderScreenspaceEffects", "EnhancedCamera:RenderScreenspaceEffects", function()
-   if LocalPlayer():InVehicle() then
-    body:Render()
-  end
+  body:Render()
 end)
 
 -- Lock yaw in vehicles
