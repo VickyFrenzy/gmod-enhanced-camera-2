@@ -9,7 +9,7 @@ TXT_SRC = README.md
 TARGET = enhanced_camera
 WORKSHOP_ID = 678037029
 
-all: $(TARGET).gma $(TARGET).jpg $(TARGET).txt
+all: $(TARGET).gma $(TARGET).jpg
 
 $(TARGET).gma: $(GMA_SRC)
 	$(GMAD) create -folder . -out $@
@@ -17,17 +17,14 @@ $(TARGET).gma: $(GMA_SRC)
 $(TARGET).jpg: $(ICON_SRC)
 	convert $< -layers flatten $@
 
-$(TARGET).txt: $(TXT_SRC)
-	md2steam < $< > $@
-
 publish: $(TARGET).gma $(TARGET).jpg
 ifeq ($(WORKSHOP_ID),)
 	$(GMPUBLISH) create -addon $(TARGET).gma -icon $(TARGET).jpg
 else
-	$(GMPUBLISH) update -id $(WORKSHOP_ID) -addon $(TARGET).gma -icon $(TARGET).jpg
+	$(GMPUBLISH) update -id $(WORKSHOP_ID) -addon $(TARGET).gma -icon $(TARGET).jpg -changes "$(shell git log -1 --pretty=%B)"
 endif
 
 clean:
-	rm -f $(TARGET).gma $(TARGET).jpg $(TARGET).txt
+	rm -f $(TARGET).gma $(TARGET).jpg
 
 .PHONY: all publish clean
