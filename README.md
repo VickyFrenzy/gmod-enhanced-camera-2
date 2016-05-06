@@ -26,6 +26,12 @@ Enhanced Camera *can not*:
 
 * Change the player's actual view height or view offset
 * Work 100% of the time if models have broken paths unless the optional serverside component is installed, though it works most of the time
+* Show your PAC3 customizations (yet!)
+
+Known Issues
+------------
+
+* Legs usually clip into the ground while crouching
 
 Console Commands and cvars
 --------------------------
@@ -43,3 +49,9 @@ All of these options can be configured in the Tools menu, Options tab.
     * `0`: Unrestrict yaw while in vehicles
 * `cl_ec_vehicle_yawlock_max`
     * (Default: `65`): Angle (in degrees) you can look away from the center view of a vehicle when `cl_ec_vehicle_yawlock` is enabled.
+* `cl_ec_refresh`
+    * Forces a model reload. May be useful if the first-person model doesn't update after changing your playermodel for some reason.
+* `cl_ec_toggle`
+    * Toggles the visibility of your body in first-person
+* `cl_ec_togglevehicle`
+    * Toggles the visibility of your body in first-person while in vehicles
