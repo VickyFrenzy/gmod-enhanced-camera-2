@@ -4,7 +4,7 @@ local cvarVehicle = CreateClientConVar("cl_ec_vehicle", "1")
 local cvarVehicleYawLock = CreateClientConVar("cl_ec_vehicle_yawlock", "1")
 local cvarVehicleYawLockMax = CreateClientConVar("cl_ec_vehicle_yawlock_max", "65")
 
-local body = {
+EnhancedCamera = EnhancedCamera or {
   -- Animation/Rendering
   entity = nil,
   skelEntity = nil,
@@ -57,9 +57,9 @@ local function GetPlayerMaterials()
 end
 
 -- Body entity functions
-function body:SetModel(model)
+function EnhancedCamera:SetModel(model)
   if not IsValid(self.entity) then
-    self.entity = ClientsideModel(model, RENDERGROUP_OPAQUE)
+    self.entity = ClientsideModel(model)
     self.entity:SetNoDraw(true)
     self.entity.GetPlayerColor = function()
       return LocalPlayer():GetPlayerColor()
@@ -68,37 +68,38 @@ function body:SetModel(model)
     self.entity:SetModel(model)
   end
   if not IsValid(self.skelEntity) then
-    self.skelEntity = ClientsideModel(model, RENDERGROUP_OPAQUE)
+    self.skelEntity = ClientsideModel(model)
     self.skelEntity:SetNoDraw(true)
   else
     self.skelEntity:SetModel(model)
   end
+
   self.ragdollSequence = self.entity:LookupSequence("ragdoll")
   self.idleSequence = self.entity:LookupSequence("idle_all_01")
 end
 
-function body:ResetSequence(seq)
+function EnhancedCamera:ResetSequence(seq)
   self.entity:ResetSequence(seq)
   self.skelEntity:ResetSequence(seq)
 end
 
-function body:SetPlaybackRate(fSpeed)
+function EnhancedCamera:SetPlaybackRate(fSpeed)
   self.entity:SetPlaybackRate(fSpeed)
   self.skelEntity:SetPlaybackRate(fSpeed)
 end
 
-function body:FrameAdvance(delta)
+function EnhancedCamera:FrameAdvance(delta)
   self.entity:FrameAdvance(delta)
   self.skelEntity:FrameAdvance(delta)
 end
 
-function body:SetPoseParameter(poseName, poseValue)
+function EnhancedCamera:SetPoseParameter(poseName, poseValue)
   self.entity:SetPoseParameter(poseName, poseValue)
   self.skelEntity:SetPoseParameter(poseName, poseValue)
 end
 
 -- Body utility functions
-function body:HasChanged(key, newvalue)
+function EnhancedCamera:HasChanged(key, newvalue)
   if self[key] ~= newvalue then
     self[key] = newvalue
     return true
@@ -106,7 +107,7 @@ function body:HasChanged(key, newvalue)
   return false
 end
 
-function body:HasTableChanged(key, newtable)
+function EnhancedCamera:HasTableChanged(key, newtable)
   local tbl = self[key]
   if tbl == newtable then
     return false
@@ -128,14 +129,14 @@ function body:HasTableChanged(key, newtable)
   return false
 end
 
-function body:Refresh()
+function EnhancedCamera:Refresh()
   self.model = nil
   self.sequence = nil
   self.pose = nil
 end
 
 -- Body state functions
-function body:ShouldDraw()
+function EnhancedCamera:ShouldDraw()
   return cvarEnabled:GetBool() and
     (not LocalPlayer():InVehicle() or cvarVehicle:GetBool()) and
     IsValid(self.entity) and
@@ -146,7 +147,7 @@ function body:ShouldDraw()
     not LocalPlayer():GetObserverTarget()
 end
 
-function body:GetPose()
+function EnhancedCamera:GetPose()
   -- Weapon:Getpose() is very unreliable at the time of writing.
   local seqname = LocalPlayer():GetSequenceName(self.sequence)
   if seqname == "ragdoll" then
@@ -167,10 +168,10 @@ function body:GetPose()
   return pose
 end
 
-function body:GetModel()
+function EnhancedCamera:GetModel()
   -- Try to find the actual player model based on the often vague guess given
   -- by GetModel()
-  name = body.model
+  name = self.model
   if util.IsValidModel(name) then return name end
 
   -- Search for a matching model name in the list of valid models
@@ -184,7 +185,7 @@ function body:GetModel()
   return "models/player/kleiner.mdl"
 end
 
-function body:GetSequence()
+function EnhancedCamera:GetSequence()
   local sequence = LocalPlayer():GetSequence()
   if sequence == self.ragdollSequence then
     return self.idleSequence
@@ -192,8 +193,29 @@ function body:GetSequence()
   return sequence
 end
 
+function EnhancedCamera:GetRenderPosAngle()
+  local renderPos = EyePos()
+  local renderAngle = nil
+
+  if LocalPlayer():InVehicle() then
+    renderAngle = LocalPlayer():GetVehicle():GetAngles()
+    renderAngle:RotateAroundAxis(renderAngle:Up(), self.vehicleAngle)
+  else
+    renderAngle = Angle(0, LocalPlayer():EyeAngles().y, 0)
+  end
+
+  local offset = self.viewOffset - self.neckOffset
+  offset:Rotate(renderAngle)
+  -- Adjust offset for crouching
+  if LocalPlayer():GetGroundEntity() ~= NULL and LocalPlayer():Crouching() then
+    offset.z = offset.z + 21
+  end
+  renderPos = renderPos + offset
+  return renderPos, renderAngle
+end
+
 -- Set up the body model to match the player model
-function body:OnModelChange()
+function EnhancedCamera:OnModelChange()
   self:SetModel(self:GetModel())
 
   for k, v in pairs(self.bodyGroups) do
@@ -248,7 +270,7 @@ local NAME_HIDE_ARM = {
 
 -- Hide limbs as appropriate for the current hold type and record the hold
 -- type for use elsewhere
-function body:OnPoseChange()
+function EnhancedCamera:OnPoseChange()
   for i = 0, self.entity:GetBoneCount() do
     self.entity:ManipulateBoneScale(i, Vector(1, 1, 1))
     self.entity:ManipulateBonePosition(i, vector_origin)
@@ -282,7 +304,7 @@ function body:OnPoseChange()
   -- Set pose-specific view offset
   if self.pose == "normal" or self.pose == "camera" or self.pose == "fist" or
       self.pose == "dual" or self.pose == "passive" or self.pose == "magic" then
-    self.viewOffset = Vector(-8, 0, -5)
+    self.viewOffset = Vector(-10, 0, -5)
   elseif self.pose == "melee" or self.pose == "melee2" or
       self.pose == "grenade" or self.pose == "slam" then
     self.viewOffset = Vector(-10, 0, -5)
@@ -307,7 +329,7 @@ function body:OnPoseChange()
   self.vehicleAngle = (self.pose == "pod") and 0 or 90
 end
 
-function body:Think(maxSeqGroundSpeed)
+function EnhancedCamera:Think(maxSeqGroundSpeed)
   local modelChanged = false
   local poseChanged = false
 
@@ -385,44 +407,27 @@ function body:Think(maxSeqGroundSpeed)
   end
 
   -- Update skeleton neck offset
-  body.neckOffset = self.skelEntity:GetBonePosition(self.skelEntity:LookupBone("ValveBiped.Bip01_Neck1"))
+  self.neckOffset = self.skelEntity:GetBonePosition(self.skelEntity:LookupBone("ValveBiped.Bip01_Neck1"))
 end
 
 hook.Add("UpdateAnimation", "EnhancedCamera:UpdateAnimation", function(ply, velocity, maxSeqGroundSpeed)
   if ply == LocalPlayer() then
-    body:Think(maxSeqGroundSpeed)
+    EnhancedCamera:Think(maxSeqGroundSpeed)
   end
 end)
 
 -- On start of reload animation
 hook.Add("DoAnimationEvent", "EnhancedCamera:DoAnimationEvent", function(ply, event, data)
   if ply == LocalPlayer() and event == PLAYERANIMEVENT_RELOAD  then
-    body.reloading = true
-    body:OnPoseChange()
+    EnhancedCamera.reloading = true
+    EnhancedCamera:OnPoseChange()
   end
 end)
 
-function body:Render()
+function EnhancedCamera:Render()
   if self:ShouldDraw() then
     local renderColor = LocalPlayer():GetColor()
-    local renderPos = EyePos()
-    local renderAngle = nil
-    local clipVector = vector_up * -1
-
-    if LocalPlayer():InVehicle() then
-      renderAngle = LocalPlayer():GetVehicle():GetAngles()
-      renderAngle:RotateAroundAxis(renderAngle:Up(), self.vehicleAngle)
-    else
-      renderAngle = Angle(0, LocalPlayer():EyeAngles().y, 0)
-    end
-
-    local offset = self.viewOffset - self.neckOffset
-    offset:Rotate(renderAngle)
-    -- Adjust offset for crouching
-    if LocalPlayer():GetGroundEntity() ~= NULL and LocalPlayer():Crouching() then
-      offset.z = offset.z + 21
-    end
-    renderPos = renderPos + offset
+    local renderPos, renderAngle = self:GetRenderPosAngle()
 
     cam.Start3D(EyePos(), EyeAngles())
       render.SetColorModulation(renderColor.r / 255, renderColor.g / 255, renderColor.b / 255)
@@ -440,15 +445,15 @@ function body:Render()
 end
 
 hook.Add("PreDrawEffects", "EnhancedCamera:RenderScreenspaceEffects", function()
-  body:Render()
+  EnhancedCamera:Render()
 end)
 
 -- Lock yaw in vehicles
 hook.Add("CreateMove", "EnhancedCamera:CreateMove", function(ucmd)
-  if body:ShouldDraw() and cvarVehicleYawLock:GetBool() and LocalPlayer():InVehicle() then
+  if EnhancedCamera:ShouldDraw() and cvarVehicleYawLock:GetBool() and LocalPlayer():InVehicle() then
     ang = ucmd:GetViewAngles()
     max = cvarVehicleYawLockMax:GetInt()
-    yaw = math.Clamp(math.NormalizeAngle(ang.y - body.vehicleAngle), -max, max) + body.vehicleAngle
+    yaw = math.Clamp(math.NormalizeAngle(ang.y - EnhancedCamera.vehicleAngle), -max, max) + EnhancedCamera.vehicleAngle
     ucmd:SetViewAngles(Angle(ang.p, yaw, ang.r))
   end
 end)
@@ -471,11 +476,11 @@ concommand.Add("cl_ec_togglevehicle", function()
 end)
 
 concommand.Add("cl_ec_refresh", function()
-  body:Refresh()
+  EnhancedCamera:Refresh()
 end)
 
 cvars.AddChangeCallback("cl_ec_showhair", function(name, oldVal, newVal)
-  body:Refresh()
+  EnhancedCamera:Refresh()
 end)
 
 -- Options Menu
