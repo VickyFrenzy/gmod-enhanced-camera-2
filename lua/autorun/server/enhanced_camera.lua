@@ -1,4 +1,4 @@
-AddCSLuaFile("client/enhanced_camera.lua")
+AddCSLuaFile("../client/enhanced_camera.lua")
 
 local function UpdateTrueModel(ply)
   if ply:GetNWString("EnhancedCamera:TrueModel") ~= ply:GetModel() then
