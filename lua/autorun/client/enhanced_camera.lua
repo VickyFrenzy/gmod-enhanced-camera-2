@@ -3,87 +3,77 @@ local cvarVehicle = CreateClientConVar("cl_ec_vehicle", "1")
 local cvarVehicleYawLock = CreateClientConVar("cl_ec_vehicle_yawlock", "1")
 local cvarVehicleYawLockMax = CreateClientConVar("cl_ec_vehicle_yawlock_max", "65")
 
--- Render the body
 local body = {
+  -- Animation/Rendering
   entity = nil,
   skelEntity = nil,
   lastTick = 0,
+
+  -- Variables to detect change in model state
   model = nil,
-  pose = "",
+  bodyGroups = nil,
+  materials = nil,
+  skin = nil,
+  material = nil,
+  color = nil,
+
+  -- Variables to detect change in pose state
   weapon = nil,
   sequence = nil,
+  reloading = false,
+
+  -- Pose-dependent variables
+  pose = "",
   viewOffset = Vector(0, 0, 0),
   neckOffset = Vector(0, 0, 0),
   vehicleAngle = 0,
+
+  -- Model-dependent variables
+  ragdollSequence = nil,
+  idleSequence = nil,
 }
 
 -- Global functions
-local function GetPose()
-  -- Weapon:Getpose() is very unreliable at the time of writing.
-  local seqname = LocalPlayer():GetSequenceName(LocalPlayer():GetSequence())
-  if string.StartWith(seqname, "sit") then
-    return "sit"
-  elseif seqname == "drive_pd" then
-    return "pod"
-  elseif string.StartWith(seqname, "drive") then
-    return "drive"
-  end
-  local pose = string.sub(seqname, string.find(seqname, "_") + 1)
-  if string.find(pose, "all") then
-    return "normal"
-  elseif pose == "smg1" then
-    return "smg"
-  end
-  return pose
-end
-
 local function ApproximatePlayerModel()
   -- Return a value suitable for detecting model changes
   return LocalPlayer():GetNWString("EnhancedCamera:TrueModel", LocalPlayer():GetModel())
 end
 
-local function GetPlayerModel()
-  -- Try to find the actual player model based on the often vague guess given
-  -- by GetModel()
-  name = body.model
-  if util.IsValidModel(name) then return name end
-
-  -- Search for a matching model name in the list of valid models
-  local basename = string.GetFileFromFilename(name)
-  for _, name in pairs(player_manager.AllValidModels()) do
-    if string.GetFileFromFilename(name) == basename then
-      return name
-    end
+local function GetPlayerBodyGroups()
+  local bodygroups = {}
+  for k, v in pairs(LocalPlayer():GetBodyGroups()) do
+    bodygroups[v.id] = LocalPlayer():GetBodygroup(v.id)
   end
-
-  return "models/player/kleiner.mdl"
+  return bodygroups
 end
 
-local function ShouldDrawBody()
-  return cvarEnabled:GetBool() and
-    (not LocalPlayer():InVehicle() or cvarVehicle:GetBool()) and
-    IsValid(body.entity) and
-    IsValid(body.skelEntity) and
-    LocalPlayer():Alive() and
-    GetViewEntity() == LocalPlayer() and
-    not LocalPlayer():ShouldDrawLocalPlayer() and
-    not LocalPlayer():GetObserverTarget()
+local function GetPlayerMaterials()
+  local materials = {}
+  for k, v in pairs(LocalPlayer():GetMaterials()) do
+    materials[k - 1] = LocalPlayer():GetSubMaterial(k - 1)
+  end
+  return materials
 end
 
 -- Body entity functions
 function body:SetModel(model)
   if not IsValid(self.entity) then
     self.entity = ClientsideModel(model, RENDERGROUP_VIEWMODEL)
+    self.entity:SetNoDraw(true)
+    self.entity.GetPlayerColor = function()
+      return LocalPlayer():GetPlayerColor()
+    end
   else
     self.entity:SetModel(model)
   end
   if not IsValid(self.skelEntity) then
     self.skelEntity = ClientsideModel(model, RENDERGROUP_OPAQUE)
+    self.skelEntity:SetNoDraw(true)
   else
     self.skelEntity:SetModel(model)
   end
-  self.entity:SetNoDraw(true)
-  self.skelEntity:SetNoDraw(true)
+  self.ragdollSequence = self.entity:LookupSequence("ragdoll")
+  self.idleSequence = self.entity:LookupSequence("idle_all_01")
 end
 
 function body:ResetSequence(seq)
@@ -106,39 +96,122 @@ function body:SetPoseParameter(poseName, poseValue)
   self.skelEntity:SetPoseParameter(poseName, poseValue)
 end
 
+-- Body utility functions
+function body:HasChanged(key, newvalue)
+  if self[key] ~= newvalue then
+    self[key] = newvalue
+    return true
+  end
+  return false
+end
+
+function body:HasTableChanged(key, newtable)
+  local tbl = self[key]
+  if tbl == newtable then
+    return false
+  end
+  if tbl == nil or newtable == nil then
+    self[key] = newtable
+    return true
+  end
+  if table.getn(tbl) ~= table.getn(newtable) then
+    self[key] = newtable
+    return true
+  end
+  for k, v in pairs(tbl) do
+    if newtable[k] ~= v then
+      self[key] = newtable
+      return true
+    end
+  end
+  return false
+end
+
+-- Body state functions
+function body:ShouldDraw()
+  return cvarEnabled:GetBool() and
+    (not LocalPlayer():InVehicle() or cvarVehicle:GetBool()) and
+    IsValid(self.entity) and
+    IsValid(self.skelEntity) and
+    LocalPlayer():Alive() and
+    GetViewEntity() == LocalPlayer() and
+    not LocalPlayer():ShouldDrawLocalPlayer() and
+    not LocalPlayer():GetObserverTarget()
+end
+
+function body:GetPose()
+  -- Weapon:Getpose() is very unreliable at the time of writing.
+  local seqname = LocalPlayer():GetSequenceName(self.sequence)
+  if seqname == "ragdoll" then
+    return "normal"
+  elseif string.StartWith(seqname, "sit") then
+    return "sit"
+  elseif seqname == "drive_pd" then
+    return "pod"
+  elseif string.StartWith(seqname, "drive") then
+    return "drive"
+  end
+  local pose = string.sub(seqname, string.find(seqname, "_") + 1)
+  if string.find(pose, "all") then
+    return "normal"
+  elseif pose == "smg1" then
+    return "smg"
+  end
+  return pose
+end
+
+function body:GetModel()
+  -- Try to find the actual player model based on the often vague guess given
+  -- by GetModel()
+  name = body.model
+  if util.IsValidModel(name) then return name end
+
+  -- Search for a matching model name in the list of valid models
+  local basename = string.GetFileFromFilename(name)
+  for _, name in pairs(player_manager.AllValidModels()) do
+    if string.GetFileFromFilename(name) == basename then
+      return name
+    end
+  end
+
+  return "models/player/kleiner.mdl"
+end
+
+function body:GetSequence()
+  local sequence = LocalPlayer():GetSequence()
+  if sequence == self.ragdollSequence then
+    return self.idleSequence
+  end
+  return sequence
+end
+
 -- Set up the body model to match the player model
 function body:OnModelChange()
-  self:SetModel(GetPlayerModel())
+  self:SetModel(self:GetModel())
 
-  for k, v in pairs(LocalPlayer():GetBodyGroups()) do
-    self.entity:SetBodygroup(v.id, LocalPlayer():GetBodygroup(v.id))
+  for k, v in pairs(self.bodyGroups) do
+    self.entity:SetBodygroup(k, v)
   end
 
-  for k, v in ipairs(LocalPlayer():GetMaterials()) do
-    self.entity:SetSubMaterial(k - 1, LocalPlayer():GetSubMaterial(k - 1))
+  for k, v in pairs(self.materials) do
+    self.entity:SetSubMaterial(k, v)
   end
 
-  self.entity:SetSkin(LocalPlayer():GetSkin())
-  self.entity:SetMaterial(LocalPlayer():GetMaterial())
-  self.entity:SetColor(LocalPlayer():GetColor())
-  self.entity.GetPlayerColor = function()
-    return LocalPlayer():GetPlayerColor()
-  end
+  self.entity:SetSkin(self.skin)
+  self.entity:SetMaterial(self.material)
+  self.entity:SetColor(self.color)
 
   -- Update new pose
   self.lastTick = 0
-  self:OnPoseChange()
+  self.sequence = nil
 end
 
-local pose_SHOW_ARM = {
+local POSE_SHOW_ARM = {
   left = {
     normal = true,
     sit = true,
     drive = true,
     pod = true,
-
-    melee = true,
-    knife = true,
   },
   right = {
     normal = true,
@@ -150,6 +223,7 @@ local pose_SHOW_ARM = {
 
 local NAME_SHOW_ARM = {
   left = {
+    weapon_crowbar = true,
     weapon_pistol = true,
     gmod_tool = true,
   },
@@ -180,7 +254,7 @@ function body:OnPoseChange()
   self.entity:ManipulateBoneScale(bone, vector_origin)
   self.entity:ManipulateBonePosition(bone, Vector(-128, 128, 0))
   if self.reloading or not (
-      (pose_SHOW_ARM.left[self.pose] or
+      (POSE_SHOW_ARM.left[self.pose] or
        NAME_SHOW_ARM.left[name]) and not
       NAME_HIDE_ARM.left[name]) then
     bone = self.entity:LookupBone("ValveBiped.Bip01_L_Upperarm")
@@ -188,7 +262,7 @@ function body:OnPoseChange()
     self.entity:ManipulateBonePosition(bone, Vector(0, 0, -128))
   end
   if self.reloading or not (
-      (pose_SHOW_ARM.right[self.pose] or
+      (POSE_SHOW_ARM.right[self.pose] or
        NAME_SHOW_ARM.right[name]) and not
       NAME_HIDE_ARM.right[name]) then
     bone = self.entity:LookupBone("ValveBiped.Bip01_R_Upperarm")
@@ -225,40 +299,40 @@ function body:OnPoseChange()
 end
 
 function body:Think(maxSeqGroundSpeed)
-  -- Handle model changes
-  local model = ApproximatePlayerModel()
-  if not IsValid(self.entity) or model ~= body.model then
-    body.model = model
-    body:OnModelChange()
-  end
-
+  local modelChanged = false
   local poseChanged = false
 
-  -- Test if pose/sequence changed
-  local sequence = LocalPlayer():GetSequence()
-  if self.sequence ~= sequence then
-    self.sequence = sequence
-    self:ResetSequence(sequence)
-    local pose = GetPose()
-    if self.pose ~= pose then
-      self.pose = pose
+  -- Handle model changes
+  modelChanged = self:HasChanged('model', ApproximatePlayerModel()) or modelChanged
+  modelChanged = self:HasTableChanged('bodyGroups', GetPlayerBodyGroups()) or modelChanged
+  modelChanged = self:HasTableChanged('materials', GetPlayerMaterials()) or modelChanged
+  modelChanged = self:HasChanged('skin', LocalPlayer():GetSkin()) or modelChanged
+  modelChanged = self:HasChanged('material', LocalPlayer():GetMaterial()) or modelChanged
+  modelChanged = self:HasTableChanged('color', LocalPlayer():GetColor()) or modelChanged
+  if not IsValid(self.entity) or modelChanged then
+    poseChanged = true
+    self:OnModelChange()
+  end
+
+  -- Test if sequence changed
+  if self:HasChanged('sequence', self:GetSequence()) then
+    self:ResetSequence(self.sequence)
+    if self:HasChanged('pose', self:GetPose()) then
       poseChanged = true
     end
   end
 
   -- Test if weapon changed
-  local weapon = LocalPlayer():GetActiveWeapon()
-  if self.weapon ~= weapon then
-    self.weapon = weapon
+  if self:HasChanged('weapon', LocalPlayer():GetActiveWeapon()) then
     self.reloading = false
     poseChanged = true
   end
 
   -- Test if reload is finished
   if self.reloading then
-    if IsValid(weapon) then
+    if IsValid(self.weapon) then
       local time = CurTime()
-      if weapon:GetNextPrimaryFire() < time and weapon:GetNextSecondaryFire() < time then
+      if self.weapon:GetNextPrimaryFire() < time and self.weapon:GetNextSecondaryFire() < time then
         self.reloading = false
         poseChanged = true
       end
@@ -294,8 +368,6 @@ function body:Think(maxSeqGroundSpeed)
   self:SetPoseParameter("move_x", (LocalPlayer():GetPoseParameter("move_x") * 2) - 1)
   self:SetPoseParameter("move_y", (LocalPlayer():GetPoseParameter("move_y") * 2) - 1)
   self:SetPoseParameter("move_yaw", (LocalPlayer():GetPoseParameter("move_yaw") * 360) - 180)
-  self:SetPoseParameter("body_yaw", (LocalPlayer():GetPoseParameter("body_yaw") * 180) - 90)
-  self:SetPoseParameter("spine_yaw", (LocalPlayer():GetPoseParameter("spine_yaw") * 180) - 90)
 
   -- Pose vehicle steering
   if LocalPlayer():InVehicle() then
@@ -304,7 +376,6 @@ function body:Think(maxSeqGroundSpeed)
   end
 
   -- Update skeleton neck offset
-  self.skelEntity:SetAngles(Angle(0, 0, 0))
   body.neckOffset = self.skelEntity:GetBonePosition(self.skelEntity:LookupBone("ValveBiped.Bip01_Neck1"))
 end
 
@@ -323,7 +394,7 @@ hook.Add("DoAnimationEvent", "EnhancedCamera:DoAnimationEvent", function(ply, ev
 end)
 
 function body:Render()
-  if ShouldDrawBody() then
+  if self:ShouldDraw() then
     cam.Start3D(EyePos(), EyeAngles())
       local renderColor = LocalPlayer():GetColor()
       local renderPos = EyePos()
@@ -341,18 +412,16 @@ function body:Render()
       offset:Rotate(renderAngle)
       renderPos = renderPos + offset
 
-      local enabled = render.EnableClipping(true)
-        render.SetColorModulation(renderColor.r / 255, renderColor.g / 255, renderColor.b / 255)
-          render.SetBlend(renderColor.a / 255)
-            self.entity:SetRenderOrigin(renderPos)
-            self.entity:SetRenderAngles(renderAngle)
-            self.entity:SetupBones()
-            self.entity:DrawModel()
-            self.entity:SetRenderOrigin()
-            self.entity:SetRenderAngles()
-          render.SetBlend(1)
-        render.SetColorModulation(1, 1, 1)
-      render.EnableClipping(enabled)
+      render.SetColorModulation(renderColor.r / 255, renderColor.g / 255, renderColor.b / 255)
+        render.SetBlend(renderColor.a / 255)
+          self.entity:SetRenderOrigin(renderPos)
+          self.entity:SetRenderAngles(renderAngle)
+          self.entity:SetupBones()
+          self.entity:DrawModel()
+          self.entity:SetRenderOrigin()
+          self.entity:SetRenderAngles()
+        render.SetBlend(1)
+      render.SetColorModulation(1, 1, 1)
     cam.End3D()
   end
 end
@@ -363,7 +432,7 @@ end)
 
 -- Lock yaw in vehicles
 hook.Add("CreateMove", "EnhancedCamera:CreateMove", function(ucmd)
-  if ShouldDrawBody() and cvarVehicleYawLock:GetBool() and LocalPlayer():InVehicle() then
+  if body:ShouldDraw() and cvarVehicleYawLock:GetBool() and LocalPlayer():InVehicle() then
     ang = ucmd:GetViewAngles()
     max = cvarVehicleYawLockMax:GetInt()
     yaw = math.Clamp(math.NormalizeAngle(ang.y - body.vehicleAngle), -max, max) + body.vehicleAngle
@@ -389,7 +458,7 @@ concommand.Add("cl_ec_togglevehicle", function()
 end)
 
 concommand.Add("cl_ec_refresh", function()
-  Legs:OnModelChange()
+  body:OnModelChange()
 end)
 
 -- Options Menu
