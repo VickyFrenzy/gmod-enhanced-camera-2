@@ -41,6 +41,9 @@ All of these options can be configured in the Tools menu, Options tab.
 * `cl_ec_enabled`
     * `1` (Default): Show your body in first-person
     * `0`: Hide your body in first-person
+* `cl_ec_showhair`
+    * `1` (Default): Show your hair (bones attached to head) in first-person
+    * `0`: Hide your hair in first-person
 * `cl_ec_vehicle`
     * `1` (Default): Show your body while in vehicles
     * `0`: Hide your body while in vehicles

@@ -1,4 +1,5 @@
 local cvarEnabled = CreateClientConVar("cl_ec_enabled", "1")
+local cvarHair = CreateClientConVar("cl_ec_showhair", "1")
 local cvarVehicle = CreateClientConVar("cl_ec_vehicle", "1")
 local cvarVehicleYawLock = CreateClientConVar("cl_ec_vehicle_yawlock", "1")
 local cvarVehicleYawLockMax = CreateClientConVar("cl_ec_vehicle_yawlock_max", "65")
@@ -58,7 +59,7 @@ end
 -- Body entity functions
 function body:SetModel(model)
   if not IsValid(self.entity) then
-    self.entity = ClientsideModel(model, RENDERGROUP_VIEWMODEL)
+    self.entity = ClientsideModel(model, RENDERGROUP_OPAQUE)
     self.entity:SetNoDraw(true)
     self.entity.GetPlayerColor = function()
       return LocalPlayer():GetPlayerColor()
@@ -252,7 +253,9 @@ function body:OnPoseChange()
   local name = IsValid(wep) and wep:GetClass() or ""
   local bone = self.entity:LookupBone("ValveBiped.Bip01_Head1")
   self.entity:ManipulateBoneScale(bone, vector_origin)
-  self.entity:ManipulateBonePosition(bone, Vector(-128, 128, 0))
+  if not cvarHair:GetBool() then
+    self.entity:ManipulateBonePosition(bone, Vector(-128, 128, 0))
+  end
   if self.reloading or not (
       (POSE_SHOW_ARM.left[self.pose] or
        NAME_SHOW_ARM.left[name]) and not
@@ -395,23 +398,27 @@ end)
 
 function body:Render()
   if self:ShouldDraw() then
+    local renderColor = LocalPlayer():GetColor()
+    local renderPos = EyePos()
+    local renderAngle = nil
+    local clipVector = vector_up * -1
+
+    if LocalPlayer():InVehicle() then
+      renderAngle = LocalPlayer():GetVehicle():GetAngles()
+      renderAngle:RotateAroundAxis(renderAngle:Up(), self.vehicleAngle)
+    else
+      renderAngle = Angle(0, LocalPlayer():EyeAngles().y, 0)
+    end
+
+    local offset = self.viewOffset - self.neckOffset
+    offset:Rotate(renderAngle)
+    -- Adjust offset for crouching
+    if LocalPlayer():GetGroundEntity() ~= NULL and LocalPlayer():Crouching() then
+      offset.z = offset.z + 21
+    end
+    renderPos = renderPos + offset
+
     cam.Start3D(EyePos(), EyeAngles())
-      local renderColor = LocalPlayer():GetColor()
-      local renderPos = EyePos()
-      local renderAngle = nil
-      local clipVector = vector_up * -1
-
-      if LocalPlayer():InVehicle() then
-        renderAngle = LocalPlayer():GetVehicle():GetAngles()
-        renderAngle:RotateAroundAxis(renderAngle:Up(), self.vehicleAngle)
-      else
-        renderAngle = Angle(0, LocalPlayer():EyeAngles().y, 0)
-      end
-
-      local offset = self.viewOffset - self.neckOffset
-      offset:Rotate(renderAngle)
-      renderPos = renderPos + offset
-
       render.SetColorModulation(renderColor.r / 255, renderColor.g / 255, renderColor.b / 255)
         render.SetBlend(renderColor.a / 255)
           self.entity:SetRenderOrigin(renderPos)
@@ -426,7 +433,7 @@ function body:Render()
   end
 end
 
-hook.Add("RenderScreenspaceEffects", "EnhancedCamera:RenderScreenspaceEffects", function()
+hook.Add("PreDrawEffects", "EnhancedCamera:RenderScreenspaceEffects", function()
   body:Render()
 end)
 
@@ -467,6 +474,11 @@ hook.Add("PopulateToolMenu", "EnhancedCamera:PopulateToolMenu", function()
     panel:AddControl("CheckBox", {
       Label = "Show body",
       Command = "cl_ec_enabled",
+    })
+
+    panel:AddControl("CheckBox", {
+      Label = "Show hair",
+      Command = "cl_ec_showhair",
     })
 
     panel:AddControl("CheckBox", {
