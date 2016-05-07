@@ -128,6 +128,12 @@ function body:HasTableChanged(key, newtable)
   return false
 end
 
+function body:Refresh()
+  self.model = nil
+  self.sequence = nil
+  self.pose = nil
+end
+
 -- Body state functions
 function body:ShouldDraw()
   return cvarEnabled:GetBool() and
@@ -465,7 +471,11 @@ concommand.Add("cl_ec_togglevehicle", function()
 end)
 
 concommand.Add("cl_ec_refresh", function()
-  body:OnModelChange()
+  body:Refresh()
+end)
+
+cvars.AddChangeCallback("cl_ec_showhair", function(name, oldVal, newVal)
+  body:Refresh()
 end)
 
 -- Options Menu

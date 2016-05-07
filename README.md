@@ -19,24 +19,19 @@ What this addon can and cannot do
 
 Enhanced Camera *can*:
 
-* Work entirely on the client-side, even on servers without the addon installed, as long as `sv_allowcslua` is enabled
-* Be added to servers and distributed to clients automatically (potentially useful for RP servers, etc)
+* Work on the client-side, even on servers without the addon installed, as long as `sv_allowcslua` is enabled
+* Dynamically change the player's height to match their model if the serverside component is installed
 
 Enhanced Camera *can not*:
 
-* Change the player's actual view height or view offset
 * Work 100% of the time if models have broken paths unless the optional serverside component is installed, though it works most of the time
 * Show your PAC3 customizations (yet!)
-
-Known Issues
-------------
-
-* Legs usually clip into the ground while crouching
+* Show your shadow (you can use `cl_drawownshadow` if you want, but it won't match your first person body or show your weapon's shadow)
 
 Console Commands and cvars
 --------------------------
 
-All of these options can be configured in the Tools menu, Options tab.
+**Client-side**: All of these options can be configured in the Tools menu, Options tab.
 
 * `cl_ec_enabled`
     * `1` (Default): Show your body in first-person
@@ -58,3 +53,13 @@ All of these options can be configured in the Tools menu, Options tab.
     * Toggles the visibility of your body in first-person
 * `cl_ec_togglevehicle`
     * Toggles the visibility of your body in first-person while in vehicles
+
+**Server-side**
+
+* `sv_ec_dynamicheight`
+    * `1` (Default): Dynamically adjust players' view heights to match their models
+    * `0`: Don't touch players' heights
+* `sv_ec_dynamicheight_min`
+    * (Default: `16`): Minimum view height
+* `sv_ec_dynamicheight_max`
+    * (Default: `64`): Maximum view height
