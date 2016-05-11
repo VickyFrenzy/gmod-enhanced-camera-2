@@ -32,7 +32,19 @@ EnhancedCamera = EnhancedCamera or {
   -- Model-dependent variables
   ragdollSequence = nil,
   idleSequence = nil,
+
+  -- API variables
+  apiBoneHide = {}
 }
+
+-- PUBLIC API
+function EnhancedCamera:SetLimbHidden(limb, hidden)
+  -- `limb` may be "l_arm", "r_arm", "l_leg", or "r_leg"
+  -- `hidden` is a bool describing the desired visibility
+  -- Limbs hidden because of pose will not be visible regardless of this setting.
+  self.apiBoneHide[limb] = hidden and true or nil
+  self:Refresh()
+end
 
 -- Global functions
 local function ApproximatePlayerModel()
@@ -150,6 +162,7 @@ end
 function EnhancedCamera:GetPose()
   -- Weapon:Getpose() is very unreliable at the time of writing.
   local seqname = LocalPlayer():GetSequenceName(self.sequence)
+  local wep = LocalPlayer():GetActiveWeapon()
   if seqname == "ragdoll" then
     return "normal"
   elseif string.StartWith(seqname, "sit") then
@@ -160,6 +173,7 @@ function EnhancedCamera:GetPose()
     return "drive"
   end
   local pose = string.sub(seqname, string.find(seqname, "_") + 1)
+  pose = (wep and wep.DefaultHoldType) or pose
   if string.find(pose, "all") then
     return "normal"
   elseif pose == "smg1" then
@@ -284,21 +298,31 @@ function EnhancedCamera:OnPoseChange()
   if not cvarHair:GetBool() then
     self.entity:ManipulateBonePosition(bone, Vector(-128, 128, 0))
   end
-  if self.reloading or not (
+  if self.apiBoneHide['l_arm'] or self.reloading or not (
       (POSE_SHOW_ARM.left[self.pose] or
        NAME_SHOW_ARM.left[name]) and not
-      NAME_HIDE_ARM.left[name]) then
+       NAME_HIDE_ARM.left[name]) then
     bone = self.entity:LookupBone("ValveBiped.Bip01_L_Upperarm")
     self.entity:ManipulateBoneScale(bone, vector_origin)
     self.entity:ManipulateBonePosition(bone, Vector(0, 0, -128))
   end
-  if self.reloading or not (
+  if self.apiBoneHide['r_arm'] or self.reloading or not (
       (POSE_SHOW_ARM.right[self.pose] or
        NAME_SHOW_ARM.right[name]) and not
-      NAME_HIDE_ARM.right[name]) then
+       NAME_HIDE_ARM.right[name]) then
     bone = self.entity:LookupBone("ValveBiped.Bip01_R_Upperarm")
     self.entity:ManipulateBoneScale(bone, vector_origin)
     self.entity:ManipulateBonePosition(bone, Vector(0, 0, 128))
+  end
+  if self.apiBoneHide['l_leg'] then
+    bone = self.entity:LookupBone("ValveBiped.Bip01_L_Thigh")
+    self.entity:ManipulateBoneScale(bone, vector_origin)
+    self.entity:ManipulateBonePosition(bone, Vector(0, 0, -128))
+  end
+  if self.apiBoneHide['r_leg'] then
+    bone = self.entity:LookupBone("ValveBiped.Bip01_R_Thigh")
+    self.entity:ManipulateBoneScale(bone, vector_origin)
+    self.entity:ManipulateBonePosition(bone, Vector(0, 0, -128))
   end
 
   -- Set pose-specific view offset
