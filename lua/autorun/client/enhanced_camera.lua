@@ -236,9 +236,9 @@ function EnhancedCamera:OnModelChange()
     self.entity:SetBodygroup(k, v)
   end
 
-  for k, v in pairs(self.materials) do
-    self.entity:SetSubMaterial(k, v)
-  end
+--  for k, v in pairs(self.materials) do
+--    self.entity:SetSubMaterial(k, v)
+--  end
 
   self.entity:SetSkin(self.skin)
   self.entity:SetMaterial(self.material)
@@ -360,7 +360,7 @@ function EnhancedCamera:Think(maxSeqGroundSpeed)
   -- Handle model changes
   modelChanged = self:HasChanged('model', ApproximatePlayerModel()) or modelChanged
   modelChanged = self:HasTableChanged('bodyGroups', GetPlayerBodyGroups()) or modelChanged
-  modelChanged = self:HasTableChanged('materials', GetPlayerMaterials()) or modelChanged
+  --modelChanged = self:HasTableChanged('materials', GetPlayerMaterials()) or modelChanged
   modelChanged = self:HasChanged('skin', LocalPlayer():GetSkin()) or modelChanged
   modelChanged = self:HasChanged('material', LocalPlayer():GetMaterial()) or modelChanged
   modelChanged = self:HasTableChanged('color', LocalPlayer():GetColor()) or modelChanged
