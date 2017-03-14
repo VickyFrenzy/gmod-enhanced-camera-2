@@ -268,6 +268,7 @@ local NAME_SHOW_ARM = {
   left = {
     weapon_crowbar = true,
     weapon_pistol = true,
+	weapon_stunstick = true,
     gmod_tool = true,
   },
   right = {
