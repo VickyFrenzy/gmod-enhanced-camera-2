@@ -369,6 +369,12 @@ function EnhancedCamera:Think(maxSeqGroundSpeed)
     poseChanged = true
     self:OnModelChange()
   end
+  
+  -- Set flexes to match
+  -- Flexes will reset if not set on every frame
+  for i = 0, LocalPlayer():GetFlexNum()-1 do
+    self.entity:SetFlexWeight(i, LocalPlayer():GetFlexWeight(i) )
+  end
 
   -- Test if sequence changed
   if self:HasChanged('sequence', self:GetSequence()) then
