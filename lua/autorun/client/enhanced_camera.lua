@@ -236,9 +236,11 @@ function EnhancedCamera:OnModelChange()
     self.entity:SetBodygroup(k, v)
   end
 
---  for k, v in pairs(self.materials) do
---    self.entity:SetSubMaterial(k, v)
---  end
+  if self:HasTableChanged('materials', GetPlayerMaterials()) then
+    for k, v in pairs(self.materials) do
+      self.entity:SetSubMaterial(k, v)
+    end
+  end
 
   self.entity:SetSkin(self.skin)
   self.entity:SetMaterial(self.material)
