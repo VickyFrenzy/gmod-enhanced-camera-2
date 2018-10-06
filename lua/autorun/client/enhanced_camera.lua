@@ -76,6 +76,9 @@ function EnhancedCamera:SetModel(model)
     self.entity.GetPlayerColor = function()
       return LocalPlayer():GetPlayerColor()
     end
+    self.entity.GetWeaponColor = function()
+      return LocalPlayer():GetWeaponColor()
+    end
   else
     self.entity:SetModel(model)
   end
@@ -156,7 +159,7 @@ function EnhancedCamera:ShouldDraw()
     LocalPlayer():Alive() and
     GetViewEntity() == LocalPlayer() and
     not LocalPlayer():ShouldDrawLocalPlayer() and
-    not LocalPlayer():GetObserverTarget()
+    LocalPlayer():GetObserverMode() == 0
 end
 
 function EnhancedCamera:GetPose()
