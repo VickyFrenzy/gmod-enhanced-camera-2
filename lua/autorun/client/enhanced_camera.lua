@@ -76,6 +76,9 @@ function EnhancedCamera:SetModel(model)
     self.entity.GetPlayerColor = function()
       return LocalPlayer():GetPlayerColor()
     end
+    self.entity.GetWeaponColor = function()
+      return LocalPlayer():GetWeaponColor()
+    end
   else
     self.entity:SetModel(model)
   end
@@ -156,7 +159,7 @@ function EnhancedCamera:ShouldDraw()
     LocalPlayer():Alive() and
     GetViewEntity() == LocalPlayer() and
     not LocalPlayer():ShouldDrawLocalPlayer() and
-    not LocalPlayer():GetObserverTarget()
+    LocalPlayer():GetObserverMode() == 0
 end
 
 function EnhancedCamera:GetPose()
@@ -236,8 +239,10 @@ function EnhancedCamera:OnModelChange()
     self.entity:SetBodygroup(k, v)
   end
 
-  for k, v in pairs(self.materials) do
-    self.entity:SetSubMaterial(k, v)
+  if self:HasTableChanged('materials', GetPlayerMaterials()) then
+    for k, v in pairs(self.materials) do
+      self.entity:SetSubMaterial(k, v)
+    end
   end
 
   self.entity:SetSkin(self.skin)
@@ -268,6 +273,7 @@ local NAME_SHOW_ARM = {
   left = {
     weapon_crowbar = true,
     weapon_pistol = true,
+	weapon_stunstick = true,
     gmod_tool = true,
   },
   right = {
@@ -360,13 +366,19 @@ function EnhancedCamera:Think(maxSeqGroundSpeed)
   -- Handle model changes
   modelChanged = self:HasChanged('model', ApproximatePlayerModel()) or modelChanged
   modelChanged = self:HasTableChanged('bodyGroups', GetPlayerBodyGroups()) or modelChanged
-  modelChanged = self:HasTableChanged('materials', GetPlayerMaterials()) or modelChanged
+  --modelChanged = self:HasTableChanged('materials', GetPlayerMaterials()) or modelChanged
   modelChanged = self:HasChanged('skin', LocalPlayer():GetSkin()) or modelChanged
   modelChanged = self:HasChanged('material', LocalPlayer():GetMaterial()) or modelChanged
   modelChanged = self:HasTableChanged('color', LocalPlayer():GetColor()) or modelChanged
   if not IsValid(self.entity) or modelChanged then
     poseChanged = true
     self:OnModelChange()
+  end
+  
+  -- Set flexes to match
+  -- Flexes will reset if not set on every frame
+  for i = 0, LocalPlayer():GetFlexNum()-1 do
+    self.entity:SetFlexWeight(i, LocalPlayer():GetFlexWeight(i) )
   end
 
   -- Test if sequence changed
