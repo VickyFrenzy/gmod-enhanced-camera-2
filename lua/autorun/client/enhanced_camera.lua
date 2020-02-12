@@ -162,7 +162,8 @@ function EnhancedCamera:ShouldDraw()
     GetViewEntity() == LocalPlayer() and
     not LocalPlayer():ShouldDrawLocalPlayer() and
     LocalPlayer():GetObserverMode() == 0 and
-    self.skelEntity.neck
+    self.skelEntity.neck and
+    self.skelEntity.neck != 0
 end
 
 function EnhancedCamera:GetPose()
