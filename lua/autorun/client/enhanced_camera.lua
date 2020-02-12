@@ -89,6 +89,8 @@ function EnhancedCamera:SetModel(model)
     self.skelEntity:SetModel(model)
   end
 
+  self.skelEntity.neck = self.skelEntity:LookupBone("ValveBiped.Bip01_Neck1") or 0
+
   self.ragdollSequence = self.entity:LookupSequence("ragdoll")
   self.idleSequence = self.entity:LookupSequence("idle_all_01")
 end
@@ -159,7 +161,8 @@ function EnhancedCamera:ShouldDraw()
     LocalPlayer():Alive() and
     GetViewEntity() == LocalPlayer() and
     not LocalPlayer():ShouldDrawLocalPlayer() and
-    LocalPlayer():GetObserverMode() == 0
+    LocalPlayer():GetObserverMode() == 0 and
+    self.skelEntity.neck
 end
 
 function EnhancedCamera:GetPose()
@@ -443,7 +446,7 @@ function EnhancedCamera:Think(maxSeqGroundSpeed)
   end
 
   -- Update skeleton neck offset
-  self.neckOffset = self.skelEntity:GetBonePosition(self.skelEntity:LookupBone("ValveBiped.Bip01_Neck1"))
+  self.neckOffset = self.skelEntity:GetBonePosition(self.skelEntity.neck)
 end
 
 hook.Add("UpdateAnimation", "EnhancedCamera:UpdateAnimation", function(ply, velocity, maxSeqGroundSpeed)
