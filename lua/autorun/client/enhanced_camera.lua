@@ -305,9 +305,9 @@ function EnhancedCamera:OnPoseChange()
   local bone = self.entity:LookupBone("ValveBiped.Bip01_Head1")
   if bone then
     self.entity:ManipulateBoneScale(bone, vector_origin)
-  end
-  if not cvarHair:GetBool() then
-    self.entity:ManipulateBonePosition(bone, Vector(-128, 128, 0))
+    if not cvarHair:GetBool() then
+      self.entity:ManipulateBonePosition(bone, Vector(-128, 128, 0))
+    end
   end
   if self.apiBoneHide['l_arm'] or self.reloading or not (
       (POSE_SHOW_ARM.left[self.pose] or
