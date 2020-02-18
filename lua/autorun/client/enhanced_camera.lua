@@ -179,7 +179,7 @@ function EnhancedCamera:GetPose()
   elseif string.StartWith(seqname, "drive") then
     return "drive"
   end
-  local pose = string.sub(seqname, string.find(seqname, "_") + 1)
+  local pose = string.sub(seqname, (string.find(seqname, "_") or 0) + 1)
   pose = (wep and wep.DefaultHoldType) or pose
   if string.find(pose, "all") then
     return "normal"
