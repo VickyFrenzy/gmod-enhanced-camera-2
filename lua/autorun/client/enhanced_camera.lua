@@ -133,7 +133,7 @@ function EnhancedCamera:HasTableChanged(key, newtable)
 		self[key] = newtable
 		return true
 	end
-	if table.getn(tbl) ~= table.getn(newtable) then
+	if #tbl ~= #newtable then
 		self[key] = newtable
 		return true
 	end
