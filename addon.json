@@ -1,14 +1,13 @@
 {
-  "title" : "Enhanced Camera",
-  "type"  : "effects",
-  "tags"  : [ "roleplay", "realism" ],
-  "ignore": [
-    ".git/*",
-    ".gitignore",
-    "icon.xcf",
-    "Makefile",
-    "README.md",
-    "enhanced_camera.gma",
-    "enhanced_camera.jpg"
-  ]
+	"title"	: "Enhanced Camera",
+	"type"	: "effects",
+	"tags"	: [ "roleplay", "realism" ],
+	"ignore": [
+		"Makefile",
+		"*.git*",
+		"*.xcf",
+		"*.md",
+		"*.gma",
+		"*.jpg"
+	]
 }
