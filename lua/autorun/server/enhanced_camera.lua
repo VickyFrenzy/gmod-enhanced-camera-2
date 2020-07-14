@@ -8,20 +8,37 @@ local function UpdateView(ply)
 	if cvarHeightEnabled:GetBool() then
 		-- Find the height by spawning a dummy entity
 		local height = 64
+		local crouch = 28
+
 		local entity = ents.Create("base_anim")
 		entity:SetModel(ply:GetModel())
-		entity:ResetSequence(entity:LookupSequence("idle_all_01"))
+
 		local bone = entity:LookupBone("ValveBiped.Bip01_Neck1")
+
+		entity:ResetSequence("idle_all_01")
 		if bone then
 			height = entity:GetBonePosition(bone).z + 5
 		end
+
 		entity:Remove()
+
+		local entity_crouch = ents.Create("base_anim")
+		entity_crouch:SetModel(ply:GetModel())
+
+		local bone_crouch = entity_crouch:LookupBone("ValveBiped.Bip01_Neck1")
+
+		entity_crouch:ResetSequence("cidle_all")
+		if bone_crouch then
+			crouch = entity_crouch:GetBonePosition(bone_crouch).z + 5
+		end
+
+		entity_crouch:Remove()
 
 		-- Update player height
 		local min = cvarHeightMin:GetInt()
 		local max = cvarHeightMax:GetInt()
 		ply:SetViewOffset(Vector(0, 0, math.Clamp(height, min, max)))
-		ply:SetViewOffsetDucked(Vector(0, 0, math.Clamp(height - 36, min, max)))
+		ply:SetViewOffsetDucked(Vector(0, 0, math.Clamp(crouch, min, max)))
 		ply.ec_ViewChanged = true
 	else
 		if ply.ec_ViewChanged then
