@@ -54,7 +54,7 @@ end
 
 local function GetPlayerBodyGroups()
 	local bodygroups = {}
-	for k, v in pairs(LocalPlayer():GetBodyGroups()) do
+	for _, v in pairs(LocalPlayer():GetBodyGroups()) do
 		bodygroups[v.id] = LocalPlayer():GetBodygroup(v.id)
 	end
 	return bodygroups
@@ -62,7 +62,7 @@ end
 
 local function GetPlayerMaterials()
 	local materials = {}
-	for k, v in pairs(LocalPlayer():GetMaterials()) do
+	for k, _ in pairs(LocalPlayer():GetMaterials()) do
 		materials[k - 1] = LocalPlayer():GetSubMaterial(k - 1)
 	end
 	return materials
@@ -163,7 +163,7 @@ function EnhancedCamera:ShouldDraw()
 		not LocalPlayer():ShouldDrawLocalPlayer() and
 		LocalPlayer():GetObserverMode() == 0 and
 		self.skelEntity.neck and
-		self.skelEntity.neck != 0
+		self.skelEntity.neck ~= 0
 end
 
 function EnhancedCamera:GetPose()
@@ -192,11 +192,11 @@ end
 function EnhancedCamera:GetModel()
 	-- Try to find the actual player model based on the often vague guess given
 	-- by GetModel()
-	name = self.model
-	if util.IsValidModel(name) then return name end
+	local model_name = self.model
+	if util.IsValidModel(model_name) then return model_name end
 
 	-- Search for a matching model name in the list of valid models
-	local basename = string.GetFileFromFilename(name)
+	local basename = string.GetFileFromFilename(model_name)
 	for _, name in pairs(player_manager.AllValidModels()) do
 		if string.GetFileFromFilename(name) == basename then
 			return name
@@ -243,7 +243,7 @@ function EnhancedCamera:OnModelChange()
 		self.entity:SetBodygroup(k, v)
 	end
 
-	if self:HasTableChanged('materials', GetPlayerMaterials()) then
+	if self:HasTableChanged("materials", GetPlayerMaterials()) then
 		for k, v in pairs(self.materials) do
 			self.entity:SetSubMaterial(k, v)
 		end
@@ -310,7 +310,7 @@ function EnhancedCamera:OnPoseChange()
 			self.entity:ManipulateBonePosition(bone, Vector(-128, 128, 0))
 		end
 	end
-	if self.apiBoneHide['l_arm'] or self.reloading or not (
+	if self.apiBoneHide["l_arm"] or self.reloading or not (
 			(POSE_SHOW_ARM.left[self.pose] or
 			 NAME_SHOW_ARM.left[name]) and not
 			 NAME_HIDE_ARM.left[name]) then
@@ -320,7 +320,7 @@ function EnhancedCamera:OnPoseChange()
 			 self.entity:ManipulateBonePosition(bone, Vector(0, 0, -128))
 		end
 	end
-	if self.apiBoneHide['r_arm'] or self.reloading or not (
+	if self.apiBoneHide["r_arm"] or self.reloading or not (
 			(POSE_SHOW_ARM.right[self.pose] or
 			 NAME_SHOW_ARM.right[name]) and not
 			 NAME_HIDE_ARM.right[name]) then
@@ -330,14 +330,14 @@ function EnhancedCamera:OnPoseChange()
 			 self.entity:ManipulateBonePosition(bone, Vector(0, 0, 128))
 		end
 	end
-	if self.apiBoneHide['l_leg'] then
+	if self.apiBoneHide["l_leg"] then
 		bone = self.entity:LookupBone("ValveBiped.Bip01_L_Thigh")
 		if bone then
 			 self.entity:ManipulateBoneScale(bone, vector_origin)
 			 self.entity:ManipulateBonePosition(bone, Vector(0, 0, -128))
 		end
 	end
-	if self.apiBoneHide['r_leg'] then
+	if self.apiBoneHide["r_leg"] then
 		bone = self.entity:LookupBone("ValveBiped.Bip01_R_Thigh")
 		if bone then
 			 self.entity:ManipulateBoneScale(bone, vector_origin)
@@ -378,12 +378,12 @@ function EnhancedCamera:Think(maxSeqGroundSpeed)
 	local poseChanged = false
 
 	-- Handle model changes
-	modelChanged = self:HasChanged('model', ApproximatePlayerModel()) or modelChanged
-	modelChanged = self:HasTableChanged('bodyGroups', GetPlayerBodyGroups()) or modelChanged
-	--modelChanged = self:HasTableChanged('materials', GetPlayerMaterials()) or modelChanged
-	modelChanged = self:HasChanged('skin', LocalPlayer():GetSkin()) or modelChanged
-	modelChanged = self:HasChanged('material', LocalPlayer():GetMaterial()) or modelChanged
-	modelChanged = self:HasTableChanged('color', LocalPlayer():GetColor()) or modelChanged
+	modelChanged = self:HasChanged("model", ApproximatePlayerModel()) or modelChanged
+	modelChanged = self:HasTableChanged("bodyGroups", GetPlayerBodyGroups()) or modelChanged
+	--modelChanged = self:HasTableChanged("materials", GetPlayerMaterials()) or modelChanged
+	modelChanged = self:HasChanged("skin", LocalPlayer():GetSkin()) or modelChanged
+	modelChanged = self:HasChanged("material", LocalPlayer():GetMaterial()) or modelChanged
+	modelChanged = self:HasTableChanged("color", LocalPlayer():GetColor()) or modelChanged
 	if not IsValid(self.entity) or modelChanged then
 		poseChanged = true
 		self:OnModelChange()
@@ -396,15 +396,15 @@ function EnhancedCamera:Think(maxSeqGroundSpeed)
 	end
 
 	-- Test if sequence changed
-	if self:HasChanged('sequence', self:GetSequence()) then
+	if self:HasChanged("sequence", self:GetSequence()) then
 		self:ResetSequence(self.sequence)
-		if self:HasChanged('pose', self:GetPose()) then
+		if self:HasChanged("pose", self:GetPose()) then
 			poseChanged = true
 		end
 	end
 
 	-- Test if weapon changed
-	if self:HasChanged('weapon', LocalPlayer():GetActiveWeapon()) then
+	if self:HasChanged("weapon", LocalPlayer():GetActiveWeapon()) then
 		self.reloading = false
 		poseChanged = true
 	end
