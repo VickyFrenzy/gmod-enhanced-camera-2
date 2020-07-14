@@ -217,18 +217,19 @@ end
 function EnhancedCamera:GetRenderPosAngle()
 	local renderPos = EyePos()
 	local renderAngle = nil
+	local ply = LocalPlayer()
 
-	if LocalPlayer():InVehicle() then
-		renderAngle = LocalPlayer():GetVehicle():GetAngles()
+	if ply:InVehicle() then
+		renderAngle = ply:GetVehicle():GetAngles()
 		renderAngle:RotateAroundAxis(renderAngle:Up(), self.vehicleAngle)
 	else
-		renderAngle = Angle(0, LocalPlayer():EyeAngles().y, 0)
+		renderAngle = Angle(0, ply:EyeAngles().y, 0)
 	end
 
 	local offset = self.viewOffset - self.neckOffset
 	offset:Rotate(renderAngle)
 	-- Adjust offset for crouching
-	if LocalPlayer():GetGroundEntity() ~= NULL and LocalPlayer():Crouching() then
+	if ply:GetGroundEntity() ~= NULL and ply:Crouching() then
 		offset.z = offset.z + 21
 	end
 	renderPos = renderPos + offset
