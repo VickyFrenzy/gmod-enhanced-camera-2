@@ -1,11 +1,13 @@
-Garry's Mod: Enhanced Camera
+Garry's Mod: Enhanced Camera 2
 ============================
 
 * [Steam Workshop](https://steamcommunity.com/sharedfiles/filedetails/?id=678037029)
-* [GitHub](https://github.com/mathewv/gmod-enhanced-camera)
+* [GitHub](https://github.com/VictorienXP/gmod-enhanced-camera-2)
 
 What is it?
 -----------
+
+The original [Enhanced Camera](https://github.com/elizagamedev/gmod-enhanced-camera) was not maintained anymore and had a lot of issues. So here is **Enhanced Camera 2**, the fixed and improved version of the [Enhanced Camera](https://github.com/elizagamedev/gmod-enhanced-camera).
 
 Enhanced Camera, based off the Oblivion/Skyrim/Fallout mods of the same name, is an addon for Garry's Mod that allows players to see their own bodies. The source code was originally based on [Gmod Legs 3](https://steamcommunity.com/sharedfiles/filedetails/?id=112806637), but has been modified so extensively and the two now have little in common besides a similar goal. It can be considered in a beta state.
 
