@@ -535,32 +535,29 @@ end)
 
 -- Options Menu
 hook.Add("PopulateToolMenu", "EnhancedCamera:PopulateToolMenu", function()
-	spawnmenu.AddToolMenuOption("Options", "Enhanced Camera", "EnhancedCamera", "Options", "", "", function(panel)
-		panel:AddControl("CheckBox", {
-			Label = "Show body",
-			Command = "cl_ec_enabled",
-		})
+	spawnmenu.AddToolMenuOption("Options", "Player", "EnhancedCamera2", "Enhanced Camera 2", "", "", function(panel)
 
-		panel:AddControl("CheckBox", {
-			Label = "Show hair",
-			Command = "cl_ec_showhair",
-		})
+		panel:ClearControls()
 
-		panel:AddControl("CheckBox", {
-			Label = "Show body in vehicles",
-			Command = "cl_ec_vehicle",
-		})
+		panel:Help("Welcome to the Enhanced Camera 2 settings.")
 
-		panel:AddControl("CheckBox", {
-			Label = "Restrict view in vehicles",
-			Command = "cl_ec_vehicle_yawlock",
-		})
+		panel:CheckBox("Show body", "cl_ec_enabled")
+		panel:ControlHelp("Show your body in first-person")
 
-		panel:AddControl("Slider", {
-			Label = "Vehicle view restrict amount",
-			Command = "cl_ec_vehicle_yawlock_max",
-			Min = 5,
-			Max = 180,
-		})
+		panel:CheckBox("Show hair", "cl_ec_showhair")
+		panel:ControlHelp("Show your hair (bones attached to head) in first-person")
+
+		panel:CheckBox("Show body in vehicles", "cl_ec_vehicle")
+		panel:ControlHelp("Show your body while in vehicles")
+
+		panel:CheckBox("Restrict view in vehicles", "cl_ec_vehicle_yawlock")
+		panel:ControlHelp("Restrict yaw while in vehicles to prevent looking backwards at your neck. Yaw is not restricted regardless of this setting if either \"Show body\" or \"Show body in vehicles\" is disabled.")
+
+		panel:NumSlider("Vehicle view restrict", "cl_ec_vehicle_yawlock_max", 5, 180)
+		panel:ControlHelp("Angle (in degrees) you can look away from the center view of a vehicle when \"Restrict view in vehicles\" is enabled.")
+
+		panel:Button("Reload model", "cl_ec_refresh")
+		panel:ControlHelp("Forces a model reload. May be useful if the first-person model doesn't update after changing your playermodel for some reason.")
+
 	end)
 end)
