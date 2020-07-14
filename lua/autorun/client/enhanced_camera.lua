@@ -1,8 +1,8 @@
-local cvarEnabled = CreateClientConVar("cl_ec_enabled", "1")
-local cvarHair = CreateClientConVar("cl_ec_showhair", "1")
-local cvarVehicle = CreateClientConVar("cl_ec_vehicle", "1")
-local cvarVehicleYawLock = CreateClientConVar("cl_ec_vehicle_yawlock", "1")
-local cvarVehicleYawLockMax = CreateClientConVar("cl_ec_vehicle_yawlock_max", "65")
+local cvarEnabled = CreateConVar("cl_ec2_enabled", 1, {FCVAR_CLIENTCMD_CAN_EXECUTE, FCVAR_ARCHIVE}, "Show your body in first-person")
+local cvarHair = CreateConVar("cl_ec2_showhair", 1, {FCVAR_CLIENTCMD_CAN_EXECUTE, FCVAR_ARCHIVE}, "Show your hair (bones attached to head) in first-person")
+local cvarVehicle = CreateConVar("cl_ec2_vehicle", 1, {FCVAR_CLIENTCMD_CAN_EXECUTE, FCVAR_ARCHIVE}, "Show your body while in vehicles")
+local cvarVehicleYawLock = CreateConVar("cl_ec2_vehicle_yawlock", 1, {FCVAR_CLIENTCMD_CAN_EXECUTE, FCVAR_ARCHIVE}, "Restrict yaw while in vehicles to prevent looking backwards at your neck. Yaw is not restricted regardless of this setting if either \"cl_ec2_enabled\" or \"cl_ec2_vehicle\" is 0.")
+local cvarVehicleYawLockMax = CreateConVar("cl_ec2_vehicle_yawlock_max", 65, {FCVAR_CLIENTCMD_CAN_EXECUTE, FCVAR_ARCHIVE}, "Angle (in degrees) you can look away from the center view of a vehicle when \"cl_ec2_vehicle_yawlock\" is 1.")
 
 EnhancedCamera = EnhancedCamera or {
 	-- Animation/Rendering
@@ -510,27 +510,27 @@ hook.Add("CreateMove", "EnhancedCamera:CreateMove", function(ucmd)
 end)
 
 -- Console commands
-concommand.Add("cl_ec_toggle", function()
+concommand.Add("cl_ec2_toggle", function()
 	if cvarEnabled:GetBool() then
-		RunConsoleCommand("cl_ec_enabled", "0")
+		RunConsoleCommand("cl_ec2_enabled", "0")
 	else
-		RunConsoleCommand("cl_ec_enabled", "1")
+		RunConsoleCommand("cl_ec2_enabled", "1")
 	end
 end)
 
-concommand.Add("cl_ec_togglevehicle", function()
+concommand.Add("cl_ec2_togglevehicle", function()
 	if cvarVehicle:GetBool() then
-		RunConsoleCommand("cl_ec_vehicle", "0")
+		RunConsoleCommand("cl_ec2_vehicle", "0")
 	else
-		RunConsoleCommand("cl_ec_vehicle", "1")
+		RunConsoleCommand("cl_ec2_vehicle", "1")
 	end
 end)
 
-concommand.Add("cl_ec_refresh", function()
+concommand.Add("cl_ec2_refresh", function()
 	EnhancedCamera:Refresh()
 end)
 
-cvars.AddChangeCallback("cl_ec_showhair", function(name, oldVal, newVal)
+cvars.AddChangeCallback("cl_ec2_showhair", function(name, oldVal, newVal)
 	EnhancedCamera:Refresh()
 end)
 
@@ -542,22 +542,22 @@ hook.Add("PopulateToolMenu", "EnhancedCamera:PopulateToolMenu", function()
 
 		panel:Help("Welcome to the Enhanced Camera 2 settings.")
 
-		panel:CheckBox("Show body", "cl_ec_enabled")
+		panel:CheckBox("Show body", "cl_ec2_enabled")
 		panel:ControlHelp("Show your body in first-person")
 
-		panel:CheckBox("Show hair", "cl_ec_showhair")
+		panel:CheckBox("Show hair", "cl_ec2_showhair")
 		panel:ControlHelp("Show your hair (bones attached to head) in first-person")
 
-		panel:CheckBox("Show body in vehicles", "cl_ec_vehicle")
+		panel:CheckBox("Show body in vehicles", "cl_ec2_vehicle")
 		panel:ControlHelp("Show your body while in vehicles")
 
-		panel:CheckBox("Restrict view in vehicles", "cl_ec_vehicle_yawlock")
+		panel:CheckBox("Restrict view in vehicles", "cl_ec2_vehicle_yawlock")
 		panel:ControlHelp("Restrict yaw while in vehicles to prevent looking backwards at your neck. Yaw is not restricted regardless of this setting if either \"Show body\" or \"Show body in vehicles\" is disabled.")
 
-		panel:NumSlider("Vehicle view restrict", "cl_ec_vehicle_yawlock_max", 5, 180)
+		panel:NumSlider("Vehicle view restrict", "cl_ec2_vehicle_yawlock_max", 5, 180)
 		panel:ControlHelp("Angle (in degrees) you can look away from the center view of a vehicle when \"Restrict view in vehicles\" is enabled.")
 
-		panel:Button("Reload model", "cl_ec_refresh")
+		panel:Button("Reload model", "cl_ec2_refresh")
 		panel:ControlHelp("Forces a model reload. May be useful if the first-person model doesn't update after changing your playermodel for some reason.")
 
 	end)

@@ -1,8 +1,8 @@
 AddCSLuaFile("../client/enhanced_camera.lua")
 
-local cvarHeightEnabled = CreateConVar("sv_ec_dynamicheight", "1", {FCVAR_SERVER_CAN_EXECUTE, FCVAR_ARCHIVE, FCVAR_REPLICATED})
-local cvarHeightMin = CreateConVar("sv_ec_dynamicheight_min", "16", {FCVAR_SERVER_CAN_EXECUTE, FCVAR_ARCHIVE})
-local cvarHeightMax = CreateConVar("sv_ec_dynamicheight_max", "64", {FCVAR_SERVER_CAN_EXECUTE, FCVAR_ARCHIVE})
+local cvarHeightEnabled = CreateConVar("sv_ec2_dynamicheight", 1, {FCVAR_SERVER_CAN_EXECUTE, FCVAR_ARCHIVE, FCVAR_REPLICATED}, "Dynamically adjust players' view heights to match their models")
+local cvarHeightMin = CreateConVar("sv_ec2_dynamicheight_min", 16, {FCVAR_SERVER_CAN_EXECUTE, FCVAR_ARCHIVE}, "Minimum view height")
+local cvarHeightMax = CreateConVar("sv_ec2_dynamicheight_max", 64, {FCVAR_SERVER_CAN_EXECUTE, FCVAR_ARCHIVE}, "Maximum view height")
 
 local function UpdateView(ply)
 	if cvarHeightEnabled:GetBool() then
@@ -70,6 +70,6 @@ local function ConVarChanged(name, oldVal, newVal)
 	end
 end
 
-cvars.AddChangeCallback("sv_ec_dynamicheight", ConVarChanged)
-cvars.AddChangeCallback("sv_ec_dynamicheight_min", ConVarChanged)
-cvars.AddChangeCallback("sv_ec_dynamicheight_max", ConVarChanged)
+cvars.AddChangeCallback("sv_ec2_dynamicheight", ConVarChanged)
+cvars.AddChangeCallback("sv_ec2_dynamicheight_min", ConVarChanged)
+cvars.AddChangeCallback("sv_ec2_dynamicheight_max", ConVarChanged)

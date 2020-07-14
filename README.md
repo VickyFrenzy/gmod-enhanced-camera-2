@@ -35,33 +35,33 @@ Console Commands and cvars
 
 **Client-side**: All of these options can be configured in the Tools menu, Options tab.
 
-* `cl_ec_enabled`
-    * `1` (Default): Show your body in first-person
-    * `0`: Hide your body in first-person
-* `cl_ec_showhair`
-    * `1` (Default): Show your hair (bones attached to head) in first-person
-    * `0`: Hide your hair in first-person
-* `cl_ec_vehicle`
-    * `1` (Default): Show your body while in vehicles
-    * `0`: Hide your body while in vehicles
-* `cl_ec_vehicle_yawlock`
-    * `1` (Default): Restrict yaw while in vehicles to prevent looking backwards at your neck. Yaw is not restricted regardless of this setting if either `cl_ec_enabled` or `cl_ec_vehicle` is `0`.
-    * `0`: Unrestrict yaw while in vehicles
-* `cl_ec_vehicle_yawlock_max`
-    * (Default: `65`): Angle (in degrees) you can look away from the center view of a vehicle when `cl_ec_vehicle_yawlock` is enabled.
-* `cl_ec_refresh`
-    * Forces a model reload. May be useful if the first-person model doesn't update after changing your playermodel for some reason.
-* `cl_ec_toggle`
-    * Toggles the visibility of your body in first-person
-* `cl_ec_togglevehicle`
-    * Toggles the visibility of your body in first-person while in vehicles
+* `cl_ec2_enabled`
+	* `1` (Default): Show your body in first-person
+	* `0`: Hide your body in first-person
+* `cl_ec2_showhair`
+	* `1` (Default): Show your hair (bones attached to head) in first-person
+	* `0`: Hide your hair in first-person
+* `cl_ec2_vehicle`
+	* `1` (Default): Show your body while in vehicles
+	* `0`: Hide your body while in vehicles
+* `cl_ec2_vehicle_yawlock`
+	* `1` (Default): Restrict yaw while in vehicles to prevent looking backwards at your neck. Yaw is not restricted regardless of this setting if either `cl_ec2_enabled` or `cl_ec2_vehicle` is `0`.
+	* `0`: Unrestrict yaw while in vehicles
+* `cl_ec2_vehicle_yawlock_max`
+	* (Default: `65`): Angle (in degrees) you can look away from the center view of a vehicle when `cl_ec2_vehicle_yawlock` is enabled.
+* `cl_ec2_refresh`
+	* Forces a model reload. May be useful if the first-person model doesn't update after changing your playermodel for some reason.
+* `cl_ec2_toggle`
+	* Toggles the visibility of your body in first-person
+* `cl_ec2_togglevehicle`
+	* Toggles the visibility of your body in first-person while in vehicles
 
 **Server-side**
 
-* `sv_ec_dynamicheight`
-    * `1` (Default): Dynamically adjust players' view heights to match their models
-    * `0`: Don't touch players' heights
-* `sv_ec_dynamicheight_min`
-    * (Default: `16`): Minimum view height
-* `sv_ec_dynamicheight_max`
-    * (Default: `64`): Maximum view height
+* `sv_ec2_dynamicheight`
+	* `1` (Default): Dynamically adjust players' view heights to match their models
+	* `0`: Don't touch players' heights
+* `sv_ec2_dynamicheight_min`
+	* (Default: `16`): Minimum view height
+* `sv_ec2_dynamicheight_max`
+	* (Default: `64`): Maximum view height
