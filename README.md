@@ -1,7 +1,7 @@
 Garry's Mod: Enhanced Camera 2
 ============================
 
-* [Steam Workshop](https://steamcommunity.com/sharedfiles/filedetails/?id=678037029)
+* [Steam Workshop](https://steamcommunity.com/sharedfiles/filedetails/?id=2203217139)
 * [GitHub](https://github.com/VictorienXP/gmod-enhanced-camera-2)
 
 What is it?
