@@ -5,7 +5,7 @@ local cvarVehicleYawLock = CreateConVar("cl_ec2_vehicle_yawlock", 1, {FCVAR_CLIE
 local cvarVehicleYawLockMax = CreateConVar("cl_ec2_vehicle_yawlock_max", 65, {FCVAR_CLIENTCMD_CAN_EXECUTE, FCVAR_ARCHIVE}, "Angle (in degrees) you can look away from the center view of a vehicle when \"cl_ec2_vehicle_yawlock\" is 1.")
 CreateConVar("cl_ec2_dynamicheight", 1, {FCVAR_CLIENTCMD_CAN_EXECUTE, FCVAR_ARCHIVE, FCVAR_USERINFO}, "Dynamically adjust your view height to match your model")
 
-EnhancedCamera = EnhancedCamera or {
+EnhancedCameraTwo = EnhancedCameraTwo or {
 	-- Animation/Rendering
 	entity = nil,
 	skelEntity = nil,
@@ -39,7 +39,7 @@ EnhancedCamera = EnhancedCamera or {
 }
 
 -- PUBLIC API
-function EnhancedCamera:SetLimbHidden(limb, hidden)
+function EnhancedCameraTwo:SetLimbHidden(limb, hidden)
 	-- `limb` may be "l_arm", "r_arm", "l_leg", or "r_leg"
 	-- `hidden` is a bool describing the desired visibility
 	-- Limbs hidden because of pose will not be visible regardless of this setting.
@@ -50,7 +50,7 @@ end
 -- Global functions
 local function ApproximatePlayerModel()
 	-- Return a value suitable for detecting model changes
-	return LocalPlayer():GetNWString("EnhancedCamera:TrueModel", LocalPlayer():GetModel())
+	return LocalPlayer():GetNWString("EnhancedCameraTwo:TrueModel", LocalPlayer():GetModel())
 end
 
 local function GetPlayerBodyGroups()
@@ -70,7 +70,7 @@ local function GetPlayerMaterials()
 end
 
 -- Body entity functions
-function EnhancedCamera:SetModel(model)
+function EnhancedCameraTwo:SetModel(model)
 	if not IsValid(self.entity) then
 		self.entity = ClientsideModel(model)
 		self.entity:SetNoDraw(true)
@@ -96,28 +96,28 @@ function EnhancedCamera:SetModel(model)
 	self.idleSequence = self.entity:LookupSequence("idle_all_01")
 end
 
-function EnhancedCamera:ResetSequence(seq)
+function EnhancedCameraTwo:ResetSequence(seq)
 	self.entity:ResetSequence(seq)
 	self.skelEntity:ResetSequence(seq)
 end
 
-function EnhancedCamera:SetPlaybackRate(fSpeed)
+function EnhancedCameraTwo:SetPlaybackRate(fSpeed)
 	self.entity:SetPlaybackRate(fSpeed)
 	self.skelEntity:SetPlaybackRate(fSpeed)
 end
 
-function EnhancedCamera:FrameAdvance(delta)
+function EnhancedCameraTwo:FrameAdvance(delta)
 	self.entity:FrameAdvance(delta)
 	self.skelEntity:FrameAdvance(delta)
 end
 
-function EnhancedCamera:SetPoseParameter(poseName, poseValue)
+function EnhancedCameraTwo:SetPoseParameter(poseName, poseValue)
 	self.entity:SetPoseParameter(poseName, poseValue)
 	self.skelEntity:SetPoseParameter(poseName, poseValue)
 end
 
 -- Body utility functions
-function EnhancedCamera:HasChanged(key, newvalue)
+function EnhancedCameraTwo:HasChanged(key, newvalue)
 	if self[key] ~= newvalue then
 		self[key] = newvalue
 		return true
@@ -125,7 +125,7 @@ function EnhancedCamera:HasChanged(key, newvalue)
 	return false
 end
 
-function EnhancedCamera:HasTableChanged(key, newtable)
+function EnhancedCameraTwo:HasTableChanged(key, newtable)
 	local tbl = self[key]
 	if tbl == newtable then
 		return false
@@ -147,14 +147,14 @@ function EnhancedCamera:HasTableChanged(key, newtable)
 	return false
 end
 
-function EnhancedCamera:Refresh()
+function EnhancedCameraTwo:Refresh()
 	self.model = nil
 	self.sequence = nil
 	self.pose = nil
 end
 
 -- Body state functions
-function EnhancedCamera:ShouldDraw()
+function EnhancedCameraTwo:ShouldDraw()
 	return cvarEnabled:GetBool() and
 		(not LocalPlayer():InVehicle() or cvarVehicle:GetBool()) and
 		IsValid(self.entity) and
@@ -167,7 +167,7 @@ function EnhancedCamera:ShouldDraw()
 		self.skelEntity.neck ~= 0
 end
 
-function EnhancedCamera:GetPose()
+function EnhancedCameraTwo:GetPose()
 	-- Weapon:Getpose() is very unreliable at the time of writing.
 	local seqname = LocalPlayer():GetSequenceName(self.sequence)
 	local wep = LocalPlayer():GetActiveWeapon()
@@ -190,7 +190,7 @@ function EnhancedCamera:GetPose()
 	return pose
 end
 
-function EnhancedCamera:GetModel()
+function EnhancedCameraTwo:GetModel()
 	-- Try to find the actual player model based on the often vague guess given
 	-- by GetModel()
 	local model_name = self.model
@@ -207,7 +207,7 @@ function EnhancedCamera:GetModel()
 	return "models/player/kleiner.mdl"
 end
 
-function EnhancedCamera:GetSequence()
+function EnhancedCameraTwo:GetSequence()
 	local sequence = LocalPlayer():GetSequence()
 	if sequence == self.ragdollSequence then
 		return self.idleSequence
@@ -215,7 +215,7 @@ function EnhancedCamera:GetSequence()
 	return sequence
 end
 
-function EnhancedCamera:GetRenderPosAngle()
+function EnhancedCameraTwo:GetRenderPosAngle()
 	local renderPos = EyePos()
 	local renderAngle = nil
 	local ply = LocalPlayer()
@@ -238,7 +238,7 @@ function EnhancedCamera:GetRenderPosAngle()
 end
 
 -- Set up the body model to match the player model
-function EnhancedCamera:OnModelChange()
+function EnhancedCameraTwo:OnModelChange()
 	self:SetModel(self:GetModel())
 
 	for k, v in pairs(self.bodyGroups) do
@@ -296,7 +296,7 @@ local NAME_HIDE_ARM = {
 
 -- Hide limbs as appropriate for the current hold type and record the hold
 -- type for use elsewhere
-function EnhancedCamera:OnPoseChange()
+function EnhancedCameraTwo:OnPoseChange()
 	for i = 0, self.entity:GetBoneCount() do
 		self.entity:ManipulateBoneScale(i, Vector(1, 1, 1))
 		self.entity:ManipulateBonePosition(i, vector_origin)
@@ -375,7 +375,7 @@ function EnhancedCamera:OnPoseChange()
 	self.vehicleAngle = (self.pose == "pod") and 0 or 90
 end
 
-function EnhancedCamera:Think(maxSeqGroundSpeed)
+function EnhancedCameraTwo:Think(maxSeqGroundSpeed)
 	local modelChanged = false
 	local poseChanged = false
 
@@ -462,21 +462,21 @@ function EnhancedCamera:Think(maxSeqGroundSpeed)
 	self.neckOffset = self.skelEntity:GetBonePosition(self.skelEntity.neck)
 end
 
-hook.Add("UpdateAnimation", "EnhancedCamera:UpdateAnimation", function(ply, velocity, maxSeqGroundSpeed)
+hook.Add("UpdateAnimation", "EnhancedCameraTwo:UpdateAnimation", function(ply, velocity, maxSeqGroundSpeed)
 	if ply == LocalPlayer() then
-		EnhancedCamera:Think(maxSeqGroundSpeed)
+		EnhancedCameraTwo:Think(maxSeqGroundSpeed)
 	end
 end)
 
 -- On start of reload animation
-hook.Add("DoAnimationEvent", "EnhancedCamera:DoAnimationEvent", function(ply, event, data)
+hook.Add("DoAnimationEvent", "EnhancedCameraTwo:DoAnimationEvent", function(ply, event, data)
 	if ply == LocalPlayer() and event == PLAYERANIMEVENT_RELOAD	then
-		EnhancedCamera.reloading = true
-		EnhancedCamera:OnPoseChange()
+		EnhancedCameraTwo.reloading = true
+		EnhancedCameraTwo:OnPoseChange()
 	end
 end)
 
-function EnhancedCamera:Render()
+function EnhancedCameraTwo:Render()
 	if self:ShouldDraw() then
 		local renderColor = LocalPlayer():GetColor()
 		local renderPos, renderAngle = self:GetRenderPosAngle()
@@ -496,16 +496,16 @@ function EnhancedCamera:Render()
 	end
 end
 
-hook.Add("PreDrawEffects", "EnhancedCamera:RenderScreenspaceEffects", function()
-	EnhancedCamera:Render()
+hook.Add("PreDrawEffects", "EnhancedCameraTwo:RenderScreenspaceEffects", function()
+	EnhancedCameraTwo:Render()
 end)
 
 -- Lock yaw in vehicles
-hook.Add("CreateMove", "EnhancedCamera:CreateMove", function(ucmd)
-	if EnhancedCamera:ShouldDraw() and cvarVehicleYawLock:GetBool() and LocalPlayer():InVehicle() then
+hook.Add("CreateMove", "EnhancedCameraTwo:CreateMove", function(ucmd)
+	if EnhancedCameraTwo:ShouldDraw() and cvarVehicleYawLock:GetBool() and LocalPlayer():InVehicle() then
 		ang = ucmd:GetViewAngles()
 		max = cvarVehicleYawLockMax:GetInt()
-		yaw = math.Clamp(math.NormalizeAngle(ang.y - EnhancedCamera.vehicleAngle), -max, max) + EnhancedCamera.vehicleAngle
+		yaw = math.Clamp(math.NormalizeAngle(ang.y - EnhancedCameraTwo.vehicleAngle), -max, max) + EnhancedCameraTwo.vehicleAngle
 		ucmd:SetViewAngles(Angle(ang.p, yaw, ang.r))
 	end
 end)
@@ -528,15 +528,15 @@ concommand.Add("cl_ec2_togglevehicle", function()
 end)
 
 concommand.Add("cl_ec2_refresh", function()
-	EnhancedCamera:Refresh()
+	EnhancedCameraTwo:Refresh()
 end)
 
 cvars.AddChangeCallback("cl_ec2_showhair", function(name, oldVal, newVal)
-	EnhancedCamera:Refresh()
+	EnhancedCameraTwo:Refresh()
 end)
 
 -- Options Menu
-hook.Add("PopulateToolMenu", "EnhancedCamera:PopulateToolMenu", function()
+hook.Add("PopulateToolMenu", "EnhancedCameraTwo:PopulateToolMenu", function()
 	spawnmenu.AddToolMenuOption("Options", "Player", "EnhancedCamera2", "Enhanced Camera 2", "", "", function(panel)
 
 		panel:ClearControls()

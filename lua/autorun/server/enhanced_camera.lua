@@ -50,17 +50,17 @@ local function UpdateView(ply)
 end
 
 local function UpdateTrueModel(ply)
-	if ply:GetNWString("EnhancedCamera:TrueModel") ~= ply:GetModel() then
-		ply:SetNWString("EnhancedCamera:TrueModel", ply:GetModel())
+	if ply:GetNWString("EnhancedCameraTwo:TrueModel") ~= ply:GetModel() then
+		ply:SetNWString("EnhancedCameraTwo:TrueModel", ply:GetModel())
 		UpdateView(ply)
 	end
 end
 
-hook.Add("PlayerSpawn", "EnhancedCamera:PlayerSpawn", function(ply)
+hook.Add("PlayerSpawn", "EnhancedCameraTwo:PlayerSpawn", function(ply)
 	UpdateTrueModel(ply)
 end)
 
-hook.Add("PlayerTick", "EnhancedCamera:PlayerTick", function(ply)
+hook.Add("PlayerTick", "EnhancedCameraTwo:PlayerTick", function(ply)
 	UpdateTrueModel(ply)
 end)
 
