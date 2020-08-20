@@ -558,11 +558,11 @@ hook.Add("PopulateToolMenu", "EnhancedCamera:PopulateToolMenu", function()
 		panel:NumSlider("Vehicle view restrict", "cl_ec2_vehicle_yawlock_max", 5, 180)
 		panel:ControlHelp("Angle (in degrees) you can look away from the center view of a vehicle when \"Restrict view in vehicles\" is enabled.")
 
-		panel:Button("Reload model", "cl_ec2_refresh")
-		panel:ControlHelp("Forces a model reload. May be useful if the first-person model doesn't update after changing your playermodel for some reason.")
-
 		panel:CheckBox("Dynamic view height", "cl_ec2_dynamicheight")
 		panel:ControlHelp("Dynamically adjust your view height to match your model.")
+
+		panel:Button("Reload model", "cl_ec2_refresh")
+		panel:ControlHelp("Forces a model reload. May be useful if the first-person model doesn't update after changing your playermodel for some reason.")
 
 	end)
 end)
