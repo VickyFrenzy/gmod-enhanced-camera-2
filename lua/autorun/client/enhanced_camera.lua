@@ -90,7 +90,7 @@ function EnhancedCameraTwo:SetModel(model)
 		self.skelEntity:SetModel(model)
 	end
 
-	self.skelEntity.neck = self.skelEntity:LookupBone("ValveBiped.Bip01_Neck1") or 0
+	self.skelEntity.neck = self:LookupCameraBone() or 0
 
 	self.ragdollSequence = self.entity:LookupSequence("ragdoll")
 	self.idleSequence = self.entity:LookupSequence("idle_all_01")
@@ -494,6 +494,28 @@ function EnhancedCameraTwo:Render()
 			render.SetColorModulation(1, 1, 1)
 		cam.End3D()
 	end
+end
+
+local camera_bone_list = {
+	"ValveBiped.Bip01_Neck1",
+}
+
+function EnhancedCameraTwo:LookupCameraBone()
+
+	for _, bone in pairs(camera_bone_list) do
+
+		bone = self.skelEntity:LookupBone(bone)
+
+		if bone then
+
+			return bone
+
+		end
+
+	end
+
+	return 0
+
 end
 
 hook.Add("PreDrawEffects", "EnhancedCameraTwo:RenderScreenspaceEffects", function()
