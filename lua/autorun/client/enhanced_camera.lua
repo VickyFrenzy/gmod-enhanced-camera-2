@@ -3,6 +3,7 @@ local cvarHair = CreateConVar("cl_ec2_showhair", 1, {FCVAR_CLIENTCMD_CAN_EXECUTE
 local cvarVehicle = CreateConVar("cl_ec2_vehicle", 1, {FCVAR_CLIENTCMD_CAN_EXECUTE, FCVAR_ARCHIVE}, "Show your body while in vehicles")
 local cvarVehicleYawLock = CreateConVar("cl_ec2_vehicle_yawlock", 1, {FCVAR_CLIENTCMD_CAN_EXECUTE, FCVAR_ARCHIVE}, "Restrict yaw while in vehicles to prevent looking backwards at your neck. Yaw is not restricted regardless of this setting if either \"cl_ec2_enabled\" or \"cl_ec2_vehicle\" is 0.")
 local cvarVehicleYawLockMax = CreateConVar("cl_ec2_vehicle_yawlock_max", 65, {FCVAR_CLIENTCMD_CAN_EXECUTE, FCVAR_ARCHIVE}, "Angle (in degrees) you can look away from the center view of a vehicle when \"cl_ec2_vehicle_yawlock\" is 1.")
+CreateConVar("cl_ec2_dynamicheight", 1, {FCVAR_CLIENTCMD_CAN_EXECUTE, FCVAR_ARCHIVE, FCVAR_USERINFO}, "Dynamically adjust your view height to match your model")
 
 EnhancedCamera = EnhancedCamera or {
 	-- Animation/Rendering
@@ -559,6 +560,9 @@ hook.Add("PopulateToolMenu", "EnhancedCamera:PopulateToolMenu", function()
 
 		panel:Button("Reload model", "cl_ec2_refresh")
 		panel:ControlHelp("Forces a model reload. May be useful if the first-person model doesn't update after changing your playermodel for some reason.")
+
+		panel:CheckBox("Dynamic view height", "cl_ec2_dynamicheight")
+		panel:ControlHelp("Dynamically adjust your view height to match your model.")
 
 	end)
 end)

@@ -5,7 +5,7 @@ local cvarHeightMin = CreateConVar("sv_ec2_dynamicheight_min", 16, {FCVAR_SERVER
 local cvarHeightMax = CreateConVar("sv_ec2_dynamicheight_max", 64, {FCVAR_SERVER_CAN_EXECUTE, FCVAR_ARCHIVE}, "Maximum view height")
 
 local function UpdateView(ply)
-	if cvarHeightEnabled:GetBool() then
+	if cvarHeightEnabled:GetBool() and ply:GetInfoNum("cl_ec2_dynamicheight", 1) == 1 then
 		-- Find the height by spawning a dummy entity
 		local height = 64
 		local crouch = 28
