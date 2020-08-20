@@ -7,14 +7,9 @@ Garry's Mod: Enhanced Camera 2
 What is it?
 -----------
 
-The original [Enhanced Camera](https://github.com/elizagamedev/gmod-enhanced-camera) was not maintained anymore and had a lot of issues. So here is **Enhanced Camera 2**, the fixed and improved version of the [Enhanced Camera](https://github.com/elizagamedev/gmod-enhanced-camera).
+The original [Enhanced Camera](https://github.com/elizagamedev/gmod-enhanced-camera) was not maintained anymore and had a lot of issues. So here is **Enhanced Camera 2**, the Lua error free and improved version of the [Enhanced Camera](https://github.com/elizagamedev/gmod-enhanced-camera).
 
-Enhanced Camera, based off the Oblivion/Skyrim/Fallout mods of the same name, is an addon for Garry's Mod that allows players to see their own bodies. The source code was originally based on [Gmod Legs 3](https://steamcommunity.com/sharedfiles/filedetails/?id=112806637), but has been modified so extensively and the two now have little in common besides a similar goal. It can be considered in a beta state.
-
-Why not Gmod Legs/Immersive First-Person?
------------------------------------------
-
-Gmod Legs, as the title suggests, only shows the player's legs. It also requires a server-side component to work properly. [Immersive First-Person](https://steamcommunity.com/sharedfiles/filedetails/?id=133042891) is entirely client-side, but doesn't use viewmodels, modifies the camera origin (and thus breaks aiming), and either requires a strict camera pitch restriction or suffers a lot of clipping. Enhanced Camera, like the Oblivion/Skyrim/Fallout mods of the same name, combines the viewmodel and worldmodel and does not modify the camera origin.
+Enhanced Camera, based off the Oblivion/Skyrim/Fallout mods of the same name, is an addon for Garry's Mod that allows players to see their own bodies.
 
 What this addon can and cannot do
 ---------------------------------
@@ -27,7 +22,7 @@ Enhanced Camera *can*:
 Enhanced Camera *can not*:
 
 * Work 100% of the time if models have broken paths unless the optional serverside component is installed, though it works most of the time
-* Show your PAC3 customizations (yet!)
+* Show your PAC3 customizations
 * Show your shadow (you can use `cl_drawownshadow` if you want, but it won't match your first person body or show your weapon's shadow)
 
 Console Commands and cvars
