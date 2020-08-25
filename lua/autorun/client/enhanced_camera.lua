@@ -164,7 +164,9 @@ function EnhancedCameraTwo:ShouldDraw()
 		not LocalPlayer():ShouldDrawLocalPlayer() and
 		LocalPlayer():GetObserverMode() == 0 and
 		self.skelEntity.neck and
-		self.skelEntity.neck ~= 0
+		self.skelEntity.neck ~= 0 and
+		not IsValid(BodyAnimMDL) and
+		not IsValid(BodyAnim)
 end
 
 function EnhancedCameraTwo:GetPose()
