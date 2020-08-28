@@ -231,10 +231,7 @@ function EnhancedCameraTwo:GetRenderPosAngle()
 
 	local offset = self.viewOffset - self.neckOffset
 	offset:Rotate(renderAngle)
-	-- Adjust offset for crouching
-	if ply:GetGroundEntity() ~= NULL and ply:Crouching() then
-		offset.z = offset.z + 21
-	end
+
 	renderPos = renderPos + offset
 	return renderPos, renderAngle
 end
