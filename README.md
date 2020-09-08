@@ -1,8 +1,12 @@
 Garry's Mod: Enhanced Camera 2
 ============================
 
-* [Steam Workshop](https://steamcommunity.com/sharedfiles/filedetails/?id=2203217139)
-* [GitHub](https://github.com/VictorienXP/gmod-enhanced-camera-2)
+[![Steam Update Date](https://img.shields.io/steam/update-date/2203217139?logo=steam)](https://steamcommunity.com/sharedfiles/filedetails/?id=2203217139)
+[![Steam Views](https://img.shields.io/steam/views/2203217139?logo=steam)](https://steamcommunity.com/sharedfiles/filedetails/?id=2203217139)
+[![Steam Subscriptions](https://img.shields.io/steam/subscriptions/2203217139?logo=steam)](https://steamcommunity.com/sharedfiles/filedetails/?id=2203217139)
+[![Steam Downloads](https://img.shields.io/steam/downloads/2203217139?logo=steam)](https://steamcommunity.com/sharedfiles/filedetails/?id=2203217139)
+[![Steam Favorites](https://img.shields.io/steam/favorites/2203217139?logo=steam)](https://steamcommunity.com/sharedfiles/filedetails/?id=2203217139)
+[![Steam File Size](https://img.shields.io/steam/size/2203217139?logo=steam)](https://steamcommunity.com/sharedfiles/filedetails/?id=2203217139)
 
 What is it?
 -----------
