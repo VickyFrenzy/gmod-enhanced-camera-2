@@ -347,8 +347,9 @@ function EnhancedCameraTwo:OnPoseChange()
 	end
 
 	-- Set pose-specific view offset
-	if self.pose == "normal" or self.pose == "camera" or self.pose == "fist" or
-			self.pose == "duel" or self.pose == "passive" or self.pose == "magic" then
+	if self.pose == "normal" or self.pose == "camera" or self.pose == "fist"
+			or self.pose == "duel" or self.pose == "dual"
+			or self.pose == "passive" or self.pose == "magic" then
 		self.viewOffset = Vector(-10, 0, -5)
 	elseif self.pose == "melee" or self.pose == "melee2" or
 			self.pose == "grenade" or self.pose == "slam" then
