@@ -1,3 +1,4 @@
+include("shared.lua")
 AddCSLuaFile("client.lua")
 
 local cvarHeightEnabled = CreateConVar("sv_ec2_dynamicheight", 1, {FCVAR_SERVER_CAN_EXECUTE, FCVAR_ARCHIVE, FCVAR_REPLICATED}, "Dynamically adjust players' view heights to match their models")
