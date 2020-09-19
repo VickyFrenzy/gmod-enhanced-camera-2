@@ -19,7 +19,7 @@ local function GetViewOffsetValue(ply, bone_name, sequence, offset)
 	entity:SetPoseParameter("move_y", ply:GetPoseParameter("move_y"))
 
 	if bone then
-		height = entity:GetBonePosition(bone).z + (offset or 12)
+		height = entity:GetBonePosition(bone).z + (offset or 6)
 	end
 
 	entity:Remove()
