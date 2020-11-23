@@ -5,14 +5,15 @@ local cvarHeightEnabled = CreateConVar("sv_ec2_dynamicheight", 1, {FCVAR_SERVER_
 local cvarHeightMin = CreateConVar("sv_ec2_dynamicheight_min", 16, {FCVAR_SERVER_CAN_EXECUTE, FCVAR_ARCHIVE}, "Minimum view height")
 local cvarHeightMax = CreateConVar("sv_ec2_dynamicheight_max", 64, {FCVAR_SERVER_CAN_EXECUTE, FCVAR_ARCHIVE}, "Maximum view height")
 
-local function GetViewOffsetValue(ply, bone_name, sequence, offset)
+
+local function GetViewOffsetValue(ply, sequence, offset)
 
 	local height
 
 	local entity = ents.Create("base_anim")
 	entity:SetModel(ply:GetModel())
 
-	local bone = entity:LookupBone(bone_name)
+	local bone = EnhancedCameraTwo:GetBone(entity)
 
 	entity:ResetSequence(sequence)
 
@@ -33,11 +34,9 @@ local function UpdateView(ply)
 
 	if cvarHeightEnabled:GetBool() and ply:GetInfoNum("cl_ec2_dynamicheight", 1) == 1 then
 
-		local bone = "ValveBiped.Bip01_Neck1"
-
 		-- Find the height by spawning a dummy entity
-		local height = GetViewOffsetValue(ply, bone, "idle_all_01")
-		local crouch = GetViewOffsetValue(ply, bone, "cidle_all")
+		local height = GetViewOffsetValue(ply, "idle_all_01")
+		local crouch = GetViewOffsetValue(ply, "cidle_all")
 
 		-- Update player height
 		local min = cvarHeightMin:GetInt()
@@ -66,9 +65,8 @@ local function UpdateViewOffset(ply)
 	if ply:GetInfoNum("cl_ec2_dynamicheight", 1) == 0 then return end
 
 	local seq = ply:GetSequence()
-	local bone_name = "ValveBiped.Bip01_Neck1"
 
-	local bone = ply:LookupBone(bone_name)
+	local bone = ply._ec2_headbone or EnhancedCameraTwo:GetBone(ply)
 
 	local height = 64
 
@@ -111,6 +109,7 @@ local function UpdateTrueModel(ply)
 end
 
 hook.Add("PlayerSpawn", "EnhancedCameraTwo:PlayerSpawn", function(ply)
+	ply._ec2_headbone = nil
 	UpdateTrueModel(ply)
 end)
 
@@ -121,6 +120,7 @@ end)
 
 local function ConVarChanged(name, oldVal, newVal)
 	for _, ply in pairs(player.GetAll()) do
+		ply._ec2_headbone = nil
 		UpdateView(ply)
 	end
 end

@@ -1,5 +1,3 @@
-include("shared.lua")
-
 local cvarEnabled = CreateConVar("cl_ec2_enabled", 1, {FCVAR_CLIENTCMD_CAN_EXECUTE, FCVAR_ARCHIVE}, "Show your body in first-person")
 local cvarHair = CreateConVar("cl_ec2_showhair", 1, {FCVAR_CLIENTCMD_CAN_EXECUTE, FCVAR_ARCHIVE}, "Show your hair (bones attached to head) in first-person")
 local cvarVehicle = CreateConVar("cl_ec2_vehicle", 1, {FCVAR_CLIENTCMD_CAN_EXECUTE, FCVAR_ARCHIVE}, "Show your body while in vehicles")
@@ -39,6 +37,8 @@ EnhancedCameraTwo = EnhancedCameraTwo or {
 	-- API variables
 	apiBoneHide = {}
 }
+
+include("shared.lua")
 
 -- PUBLIC API
 function EnhancedCameraTwo:SetLimbHidden(limb, hidden)
@@ -92,7 +92,7 @@ function EnhancedCameraTwo:SetModel(model)
 		self.skelEntity:SetModel(model)
 	end
 
-	self.skelEntity.neck = self.skelEntity:LookupBone("ValveBiped.Bip01_Neck1") or 0
+	self.skelEntity.neck = self:GetBone(self.skelEntity)
 
 	self.ragdollSequence = self.entity:LookupSequence("ragdoll")
 	self.idleSequence = self.entity:LookupSequence("idle_all_01")
