@@ -8,6 +8,6 @@
 		"*.xcf",
 		"*.md",
 		"*.gma",
-		"*.jpg"
+		"glualint.json"
 	]
 }
