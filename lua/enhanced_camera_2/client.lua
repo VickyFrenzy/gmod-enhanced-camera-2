@@ -3,6 +3,7 @@ local cvarHair = CreateConVar("cl_ec2_showhair", 1, {FCVAR_CLIENTCMD_CAN_EXECUTE
 local cvarVehicle = CreateConVar("cl_ec2_vehicle", 1, {FCVAR_CLIENTCMD_CAN_EXECUTE, FCVAR_ARCHIVE}, "Show your body while in vehicles")
 local cvarVehicleYawLock = CreateConVar("cl_ec2_vehicle_yawlock", 1, {FCVAR_CLIENTCMD_CAN_EXECUTE, FCVAR_ARCHIVE}, "Restrict yaw while in vehicles to prevent looking backwards at your neck. Yaw is not restricted regardless of this setting if either \"cl_ec2_enabled\" or \"cl_ec2_vehicle\" is 0.")
 local cvarVehicleYawLockMax = CreateConVar("cl_ec2_vehicle_yawlock_max", 65, {FCVAR_CLIENTCMD_CAN_EXECUTE, FCVAR_ARCHIVE}, "Angle (in degrees) you can look away from the center view of a vehicle when \"cl_ec2_vehicle_yawlock\" is 1.")
+CreateConVar("cl_ec2_staticheight", 1, {FCVAR_CLIENTCMD_CAN_EXECUTE, FCVAR_ARCHIVE, FCVAR_USERINFO}, "Statically adjust your view height to match your model")
 CreateConVar("cl_ec2_dynamicheight", 1, {FCVAR_CLIENTCMD_CAN_EXECUTE, FCVAR_ARCHIVE, FCVAR_USERINFO}, "Dynamically adjust your view height to match your model")
 
 EnhancedCameraTwo = EnhancedCameraTwo or {
@@ -560,6 +561,9 @@ hook.Add("PopulateToolMenu", "EnhancedCameraTwo:PopulateToolMenu", function()
 		panel:NumSlider("Vehicle view restrict", "cl_ec2_vehicle_yawlock_max", 5, 180)
 		panel:ControlHelp("Angle (in degrees) you can look away from the center view of a vehicle when \"Restrict view in vehicles\" is enabled.")
 
+		panel:CheckBox("Static view height", "cl_ec2_staticheight")
+		panel:ControlHelp("Statically adjust your view height to match your model.")
+
 		panel:CheckBox("Dynamic view height", "cl_ec2_dynamicheight")
 		panel:ControlHelp("Dynamically adjust your view height to match your model.")
 
@@ -574,13 +578,13 @@ hook.Add("PopulateToolMenu", "EnhancedCameraTwo:PopulateToolMenu", function()
 
 		panel:Help("Welcome to the Enhanced Camera 2 server settings.")
 
-		panel:CheckBox("Dynamic Height", "sv_ec2_dynamicheight")
+		panel:CheckBox("Static view height", "sv_ec2_staticheight")
+		panel:ControlHelp("Statically adjust players' view heights to match their models.")
+
+		panel:CheckBox("Dynamic view height", "sv_ec2_dynamicheight")
 		panel:ControlHelp("Dynamically adjust players' view heights to match their models")
 
-		panel:CheckBox("Dynamic Height while Crouched", "sv_ec2_dynamicheight_crouch")
-		panel:ControlHelp("Dynamically adjust players' view heights to match their models while holding Crouch bind. If disabled, crouch height will not be dynamic.")
-
-		panel:NumSlider("Maximum View Height", "sv_ec2_dynamicheight_max", 0, 100)
+		panel:NumSlider("Maximum view height", "sv_ec2_dynamicheight_max", 0, 100)
 		panel:ControlHelp("Maximum View Height")
 
 		panel:NumSlider("Minimum view height", "sv_ec2_dynamicheight_min", 0, 100)

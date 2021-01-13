@@ -54,11 +54,16 @@ Console Commands and cvars
 	* Toggles the visibility of your body in first-person
 * `cl_ec2_togglevehicle`
 	* Toggles the visibility of your body in first-person while in vehicles
+* `cl_ec2_staticheight`
+	* Statically adjust your view height to match your model
 * `cl_ec2_dynamicheight`
 	* Dynamically adjust your view height to match your model
 
 **Server-side**
 
+* `sv_ec2_staticheight`
+	* `1` (Default): Statically adjust players' view heights to match their models
+	* `0`: Don't touch players' heights
 * `sv_ec2_dynamicheight`
 	* `1` (Default): Dynamically adjust players' view heights to match their models
 	* `0`: Don't touch players' heights

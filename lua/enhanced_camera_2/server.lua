@@ -1,8 +1,8 @@
 include("shared.lua")
 AddCSLuaFile("client.lua")
 
+local cvarStaticEnabled = CreateConVar("sv_ec2_staticheight", 1, {FCVAR_SERVER_CAN_EXECUTE, FCVAR_ARCHIVE, FCVAR_REPLICATED}, "Statically adjust players' view heights to match their models")
 local cvarHeightEnabled = CreateConVar("sv_ec2_dynamicheight", 1, {FCVAR_SERVER_CAN_EXECUTE, FCVAR_ARCHIVE, FCVAR_REPLICATED}, "Dynamically adjust players' view heights to match their models")
-local cvarHeightCrouchEnabled = CreateConVar("sv_ec2_dynamicheight_crouch", 1, {FCVAR_SERVER_CAN_EXECUTE, FCVAR_ARCHIVE, FCVAR_REPLICATED}, "Dynamically adjust players' view heights to match their models while crouching. If disabled, crouch height will not be dynamic.")
 local cvarHeightMin = CreateConVar("sv_ec2_dynamicheight_min", 16, {FCVAR_SERVER_CAN_EXECUTE, FCVAR_ARCHIVE}, "Minimum view height")
 local cvarHeightMax = CreateConVar("sv_ec2_dynamicheight_max", 64, {FCVAR_SERVER_CAN_EXECUTE, FCVAR_ARCHIVE}, "Maximum view height")
 
@@ -33,7 +33,7 @@ end
 
 local function UpdateView(ply)
 
-	if cvarHeightEnabled:GetBool() and ply:GetInfoNum("cl_ec2_dynamicheight", 1) == 1 then
+	if cvarStaticEnabled:GetBool() and ply:GetInfoNum("cl_ec2_staticheight", 1) == 1 then
 
 		-- Find the height by spawning a dummy entity
 		local height = GetViewOffsetValue(ply, "idle_all_01") or 64
@@ -90,11 +90,9 @@ local function UpdateViewOffset(ply)
 
 		local min = cvarHeightMin:GetInt()
 		local max = cvarHeightMax:GetInt()
-		if cvarHeightCrouchEnabled:GetBool() and ply:GetInfoNum("cl_ec2_dynamicheight_crouch", 1) == 1 then
-			ply:SetCurrentViewOffset(Vector(0, 0, math.Clamp(height, min, max)))
-		end
-		ply.ec2_seq = seq
+		ply:SetCurrentViewOffset(Vector(0, 0, math.Clamp(height, min, max)))
 
+		ply.ec2_seq = seq
 		ply.ec2_height = height
 
 	end
@@ -125,7 +123,7 @@ local function ConVarChanged(_, _, _)
 	end
 end
 
+cvars.AddChangeCallback("sv_ec2_staticheight", ConVarChanged)
 cvars.AddChangeCallback("sv_ec2_dynamicheight", ConVarChanged)
-cvars.AddChangeCallback("sv_ec2_dynamicheight_crouch", ConVarChanged)
 cvars.AddChangeCallback("sv_ec2_dynamicheight_min", ConVarChanged)
 cvars.AddChangeCallback("sv_ec2_dynamicheight_max", ConVarChanged)
