@@ -8,6 +8,7 @@
 		"*.xcf",
 		"*.md",
 		"*.gma",
+		".editorconfig",
 		"glualint.json"
 	]
 }
