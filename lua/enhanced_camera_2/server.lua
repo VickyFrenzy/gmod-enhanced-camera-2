@@ -2,8 +2,10 @@ include("shared.lua")
 AddCSLuaFile("client.lua")
 
 local cvarHeightEnabled = CreateConVar("sv_ec2_dynamicheight", 1, {FCVAR_SERVER_CAN_EXECUTE, FCVAR_ARCHIVE, FCVAR_REPLICATED}, "Dynamically adjust players' view heights to match their models")
+local cvarHeightCrouchEnabled = CreateConVar("sv_ec2_dynamicheight_crouch", 1, {FCVAR_SERVER_CAN_EXECUTE, FCVAR_ARCHIVE, FCVAR_REPLICATED}, "Dynamically adjust players' view heights to match their models while crouching. If disabled, crouch height will not be dynamic.")
 local cvarHeightMin = CreateConVar("sv_ec2_dynamicheight_min", 16, {FCVAR_SERVER_CAN_EXECUTE, FCVAR_ARCHIVE}, "Minimum view height")
 local cvarHeightMax = CreateConVar("sv_ec2_dynamicheight_max", 64, {FCVAR_SERVER_CAN_EXECUTE, FCVAR_ARCHIVE}, "Maximum view height")
+
 
 
 local function GetViewOffsetValue(ply, sequence, offset)
@@ -36,15 +38,14 @@ local function UpdateView(ply)
 
 		-- Find the height by spawning a dummy entity
 		local height = GetViewOffsetValue(ply, "idle_all_01")
-		local crouch = GetViewOffsetValue(ply, "cidle_all")
+		local crouch = GetViewOffsetValue(ply, "cwalk_all")
 
 		-- Update player height
 		local min = cvarHeightMin:GetInt()
 		local max = cvarHeightMax:GetInt()
 
-		ply:SetViewOffset(Vector(0, 0, math.Clamp(height or 64, min, max)))
-		ply:SetViewOffsetDucked(Vector(0, 0, math.Clamp(crouch or 28, min, max)))
-
+		ply:SetViewOffset(Vector(0, 0, math.Clamp(height, min, max)))
+		ply:SetViewOffsetDucked(Vector(0, 0, math.Clamp(crouch, min, min)))
 		ply.ec_ViewChanged = true
 
 	elseif ply.ec_ViewChanged then
@@ -90,9 +91,9 @@ local function UpdateViewOffset(ply)
 
 		local min = cvarHeightMin:GetInt()
 		local max = cvarHeightMax:GetInt()
-
-		ply:SetCurrentViewOffset(Vector(0, 0, math.Clamp(height or 64, min, max)))
-
+		if cvarHeightCrouchEnabled:GetBool() and ply:GetInfoNum("cl_ec2_dynamicheight_crouch", 1) == 1 then
+			ply:SetCurrentViewOffset(Vector(0, 0, math.Clamp(height or 64, min, max)))
+		end
 		ply.ec2_seq = seq
 
 		ply.ec2_height = height
@@ -126,5 +127,8 @@ local function ConVarChanged(name, oldVal, newVal)
 end
 
 cvars.AddChangeCallback("sv_ec2_dynamicheight", ConVarChanged)
+cvars.AddChangeCallback("sv_ec2_dynamicheight_crouch", ConVarChanged)
 cvars.AddChangeCallback("sv_ec2_dynamicheight_min", ConVarChanged)
 cvars.AddChangeCallback("sv_ec2_dynamicheight_max", ConVarChanged)
+
+

@@ -562,9 +562,29 @@ hook.Add("PopulateToolMenu", "EnhancedCameraTwo:PopulateToolMenu", function()
 
 		panel:CheckBox("Dynamic view height", "cl_ec2_dynamicheight")
 		panel:ControlHelp("Dynamically adjust your view height to match your model.")
-
+		
 		panel:Button("Reload model", "cl_ec2_refresh")
 		panel:ControlHelp("Forces a model reload. May be useful if the first-person model doesn't update after changing your playermodel for some reason.")
+
+	end)
+	
+	spawnmenu.AddToolMenuOption("Options", "Player", "EnhancedCamera2Server", "Enhanced Camera 2 Server", "", "", function(panel)
+
+		panel:ClearControls()
+
+		panel:Help("Welcome to the Enhanced Camera 2 server settings.")
+
+		panel:CheckBox("Dynamic Height", "sv_ec2_dynamicheight")
+		panel:ControlHelp("Dynamically adjust players' view heights to match their models")
+
+		panel:CheckBox("Dynamic Height while Crouched", "sv_ec2_dynamicheight_crouch")
+		panel:ControlHelp("Dynamically adjust players' view heights to match their models while holding Crouch bind. If disabled, crouch height will not be dynamic.")
+
+		panel:NumSlider("Maximum View Height", "sv_ec2_dynamicheight_max", 0, 100)
+		panel:ControlHelp("Maximum View Height")
+
+		panel:NumSlider("Minimum view height", "sv_ec2_dynamicheight_min", 0, 100)
+		panel:ControlHelp("Minimum view height")
 
 	end)
 end)
