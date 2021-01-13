@@ -58,6 +58,16 @@ local function UpdateView(ply)
 
 end
 
+local function ShouldUpdateViewOffset(ply, seq, height)
+	local mode = ply:GetInfoNum("cl_ec2_dynamicheight", 1)
+	if mode == 1 and height ~= ply.ec2_height then
+		return true
+	elseif mode == 2 and height > ply.ec2_height then
+		return true
+	end
+	return seq ~= ply.ec2_seq
+end
+
 local function UpdateViewOffset(ply)
 
 	if not cvarHeightEnabled:GetBool() then return end
@@ -86,7 +96,7 @@ local function UpdateViewOffset(ply)
 
 	end
 
-	if seq ~= ply.ec2_seq or height ~= ply.ec2_height then
+	if ShouldUpdateViewOffset(ply, seq, height) then
 
 		local min = cvarHeightMin:GetInt()
 		local max = cvarHeightMax:GetInt()

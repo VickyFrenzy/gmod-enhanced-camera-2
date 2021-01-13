@@ -564,7 +564,10 @@ hook.Add("PopulateToolMenu", "EnhancedCameraTwo:PopulateToolMenu", function()
 		panel:CheckBox("Static view height", "cl_ec2_staticheight")
 		panel:ControlHelp("Statically adjust your view height to match your model.")
 
-		panel:CheckBox("Dynamic view height", "cl_ec2_dynamicheight")
+		local dyna = panel:ComboBox("Dynamic view height", "cl_ec2_dynamicheight")
+		dyna:AddChoice("Disabled", 0)
+		dyna:AddChoice("\"Real time\" mode", 1)
+		dyna:AddChoice("\"Comfort\" mode", 2)
 		panel:ControlHelp("Dynamically adjust your view height to match your model.")
 
 		panel:Button("Reload model", "cl_ec2_refresh")

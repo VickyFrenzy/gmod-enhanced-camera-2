@@ -44,18 +44,17 @@ _All of these options can be configured in the Options tab._
 * `cl_ec2_vehicle_yawlock`
   * `1` (Default): Restrict yaw while in vehicles to prevent looking backwards at your neck. Yaw is not restricted regardless of this setting if either `cl_ec2_enabled` or `cl_ec2_vehicle` is `0`.
   * `0`: Unrestrict yaw while in vehicles
-* `cl_ec2_vehicle_yawlock_max`
-  * (Default: `65`): Angle (in degrees) you can look away from the center view of a vehicle when `cl_ec2_vehicle_yawlock` is enabled.
-* `cl_ec2_refresh`
-  * Forces a model reload. May be useful if the first-person model doesn't update after changing your playermodel for some reason.
-* `cl_ec2_toggle`
-  * Toggles the visibility of your body in first-person
-* `cl_ec2_togglevehicle`
-  * Toggles the visibility of your body in first-person while in vehicles
-* `cl_ec2_staticheight`
-  * Statically adjust your view height to match your model
-* `cl_ec2_dynamicheight`
-  * Dynamically adjust your view height to match your model
+* `cl_ec2_vehicle_yawlock_max` (Default: `65`): Angle (in degrees) you can look away from the center view of a vehicle when `cl_ec2_vehicle_yawlock` is enabled.
+* `cl_ec2_refresh` Forces a model reload. May be useful if the first-person model doesn't update after changing your playermodel for some reason.
+* `cl_ec2_toggle` Toggles the visibility of your body in first-person
+* `cl_ec2_togglevehicle` Toggles the visibility of your body in first-person while in vehicles
+* `cl_ec2_staticheight` Statically adjust your view height to match your model
+  * `0`: Disabled
+  * `1` (Default): Enabled
+* `cl_ec2_dynamicheight` Dynamically adjust your view height to match your model
+  * `0`: Disabled
+  * `1` (Default): "Real time" mode
+  * `2`: "Comfort" mode
 
 ### Server-side
 
