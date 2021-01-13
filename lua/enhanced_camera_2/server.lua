@@ -38,7 +38,7 @@ local function UpdateView(ply)
 
 		-- Find the height by spawning a dummy entity
 		local height = GetViewOffsetValue(ply, "idle_all_01")
-		local crouch = GetViewOffsetValue(ply, "cwalk_all")
+		local crouch = GetViewOffsetValue(ply, "cidle_all")
 
 		-- Update player height
 		local min = cvarHeightMin:GetInt()
