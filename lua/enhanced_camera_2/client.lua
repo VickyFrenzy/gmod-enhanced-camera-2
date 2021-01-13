@@ -464,14 +464,14 @@ function EnhancedCameraTwo:Think(maxSeqGroundSpeed)
 	self.neckOffset = self.skelEntity:GetBonePosition(self.skelEntity.neck)
 end
 
-hook.Add("UpdateAnimation", "EnhancedCameraTwo:UpdateAnimation", function(ply, velocity, maxSeqGroundSpeed)
+hook.Add("UpdateAnimation", "EnhancedCameraTwo:UpdateAnimation", function(ply, _, maxSeqGroundSpeed)
 	if ply == LocalPlayer() then
 		EnhancedCameraTwo:Think(maxSeqGroundSpeed)
 	end
 end)
 
 -- On start of reload animation
-hook.Add("DoAnimationEvent", "EnhancedCameraTwo:DoAnimationEvent", function(ply, event, data)
+hook.Add("DoAnimationEvent", "EnhancedCameraTwo:DoAnimationEvent", function(ply, event)
 	if ply == LocalPlayer() and event == PLAYERANIMEVENT_RELOAD	then
 		EnhancedCameraTwo.reloading = true
 		EnhancedCameraTwo:OnPoseChange()
@@ -533,7 +533,7 @@ concommand.Add("cl_ec2_refresh", function()
 	EnhancedCameraTwo:Refresh()
 end)
 
-cvars.AddChangeCallback("cl_ec2_showhair", function(name, oldVal, newVal)
+cvars.AddChangeCallback("cl_ec2_showhair", function()
 	EnhancedCameraTwo:Refresh()
 end)
 
@@ -562,12 +562,12 @@ hook.Add("PopulateToolMenu", "EnhancedCameraTwo:PopulateToolMenu", function()
 
 		panel:CheckBox("Dynamic view height", "cl_ec2_dynamicheight")
 		panel:ControlHelp("Dynamically adjust your view height to match your model.")
-		
+
 		panel:Button("Reload model", "cl_ec2_refresh")
 		panel:ControlHelp("Forces a model reload. May be useful if the first-person model doesn't update after changing your playermodel for some reason.")
 
 	end)
-	
+
 	spawnmenu.AddToolMenuOption("Options", "Player", "EnhancedCamera2Server", "Enhanced Camera 2 Server", "", "", function(panel)
 
 		panel:ClearControls()

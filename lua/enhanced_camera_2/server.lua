@@ -7,7 +7,6 @@ local cvarHeightMin = CreateConVar("sv_ec2_dynamicheight_min", 16, {FCVAR_SERVER
 local cvarHeightMax = CreateConVar("sv_ec2_dynamicheight_max", 64, {FCVAR_SERVER_CAN_EXECUTE, FCVAR_ARCHIVE}, "Maximum view height")
 
 
-
 local function GetViewOffsetValue(ply, sequence, offset)
 
 	local height
@@ -37,8 +36,8 @@ local function UpdateView(ply)
 	if cvarHeightEnabled:GetBool() and ply:GetInfoNum("cl_ec2_dynamicheight", 1) == 1 then
 
 		-- Find the height by spawning a dummy entity
-		local height = GetViewOffsetValue(ply, "idle_all_01")
-		local crouch = GetViewOffsetValue(ply, "cidle_all")
+		local height = GetViewOffsetValue(ply, "idle_all_01") or 64
+		local crouch = GetViewOffsetValue(ply, "cidle_all") or 28
 
 		-- Update player height
 		local min = cvarHeightMin:GetInt()
@@ -92,7 +91,7 @@ local function UpdateViewOffset(ply)
 		local min = cvarHeightMin:GetInt()
 		local max = cvarHeightMax:GetInt()
 		if cvarHeightCrouchEnabled:GetBool() and ply:GetInfoNum("cl_ec2_dynamicheight_crouch", 1) == 1 then
-			ply:SetCurrentViewOffset(Vector(0, 0, math.Clamp(height or 64, min, max)))
+			ply:SetCurrentViewOffset(Vector(0, 0, math.Clamp(height, min, max)))
 		end
 		ply.ec2_seq = seq
 
@@ -119,7 +118,7 @@ hook.Add("PlayerTick", "EnhancedCameraTwo:PlayerTick", function(ply)
 	UpdateViewOffset(ply)
 end)
 
-local function ConVarChanged(name, oldVal, newVal)
+local function ConVarChanged(_, _, _)
 	for _, ply in pairs(player.GetAll()) do
 		ply._ec2_headbone = nil
 		UpdateView(ply)
@@ -130,5 +129,3 @@ cvars.AddChangeCallback("sv_ec2_dynamicheight", ConVarChanged)
 cvars.AddChangeCallback("sv_ec2_dynamicheight_crouch", ConVarChanged)
 cvars.AddChangeCallback("sv_ec2_dynamicheight_min", ConVarChanged)
 cvars.AddChangeCallback("sv_ec2_dynamicheight_max", ConVarChanged)
-
-
