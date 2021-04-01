@@ -62,7 +62,7 @@ local function ShouldUpdateViewOffset(ply, seq, height)
 	local mode = ply:GetInfoNum("cl_ec2_dynamicheight", 1)
 	if mode == 1 and height ~= ply.ec2_height then
 		return true
-	elseif mode == 2 and height > ply.ec2_height then
+	elseif mode == 2 and (not ply.ec2_height or height > ply.ec2_height) then
 		return true
 	end
 	return seq ~= ply.ec2_seq
