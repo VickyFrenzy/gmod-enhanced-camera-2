@@ -17,8 +17,7 @@ Enhanced Camera, based off the Oblivion/Skyrim/Fallout mods of the same name, is
 
 Enhanced Camera *can*:
 
-* Work on the client-side, even on servers without the addon installed, as long as `sv_allowcslua` is enabled
-* Dynamically change the player's height to match their model if the serverside component is installed
+* Dynamically change the player's height to match their model
 
 Enhanced Camera *can not*:
 
