@@ -137,3 +137,42 @@ cvars.AddChangeCallback("sv_ec2_staticheight", ConVarChanged)
 cvars.AddChangeCallback("sv_ec2_dynamicheight", ConVarChanged)
 cvars.AddChangeCallback("sv_ec2_dynamicheight_min", ConVarChanged)
 cvars.AddChangeCallback("sv_ec2_dynamicheight_max", ConVarChanged)
+
+local plyMeta = FindMetaTable("Player")
+EnhancedCameraTwo.BackupFuncs = EnhancedCameraTwo.BackupFuncs or {
+	SetViewOffset = plyMeta.SetViewOffset,
+	SetViewOffsetDucked = plyMeta.SetViewOffsetDucked,
+	SetCurrentViewOffset = plyMeta.SetCurrentViewOffset,
+}
+
+concommand.Add("ec2_debug_enable_sv", function()
+	local funcs = EnhancedCameraTwo.BackupFuncs
+	function plyMeta:SetViewOffset(viewOffset)
+		debug.Trace()
+		return funcs.SetViewOffset(self, viewOffset)
+	end
+	function plyMeta:SetViewOffsetDucked(viewOffset)
+		debug.Trace()
+		return funcs.SetViewOffsetDucked(self, viewOffset)
+	end
+	function plyMeta:SetCurrentViewOffset(viewOffset)
+		debug.Trace()
+		return funcs.SetCurrentViewOffset(self, viewOffset)
+	end
+end)
+
+concommand.Add("ec2_debug_disable_sv", function()
+	local funcs = EnhancedCameraTwo.BackupFuncs
+	plyMeta.SetViewOffset = funcs.SetViewOffset
+	plyMeta.SetViewOffsetDucked = funcs.SetViewOffsetDucked
+	plyMeta.SetCurrentViewOffset = funcs.SetCurrentViewOffset
+end)
+
+concommand.Add("ec2_debug_print_hooks_sv", function()
+	print("PlayerSpawn\n")
+	PrintTable(hook.GetTable().PlayerSpawn)
+	print()
+	print()
+	print("PlayerTick\n")
+	PrintTable(hook.GetTable().PlayerTick)
+end)
