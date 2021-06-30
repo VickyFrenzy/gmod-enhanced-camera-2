@@ -281,7 +281,7 @@ local NAME_SHOW_ARM = {
 	left = {
 		weapon_crowbar = true,
 		weapon_pistol = true,
-	weapon_stunstick = true,
+		weapon_stunstick = true,
 		gmod_tool = true,
 	},
 	right = {
@@ -316,36 +316,36 @@ function EnhancedCameraTwo:OnPoseChange()
 	end
 	if self.apiBoneHide["l_arm"] or self.reloading or not (
 			(POSE_SHOW_ARM.left[self.pose] or
-			 NAME_SHOW_ARM.left[name]) and not
-			 NAME_HIDE_ARM.left[name]) then
+			NAME_SHOW_ARM.left[name]) and not
+			NAME_HIDE_ARM.left[name]) then
 		bone = self.entity:LookupBone("ValveBiped.Bip01_L_Upperarm")
 		if bone then
-			 self.entity:ManipulateBoneScale(bone, vector_origin)
-			 self.entity:ManipulateBonePosition(bone, Vector(0, 0, -128))
+			self.entity:ManipulateBoneScale(bone, vector_origin)
+			self.entity:ManipulateBonePosition(bone, Vector(0, 0, -128))
 		end
 	end
 	if self.apiBoneHide["r_arm"] or self.reloading or not (
 			(POSE_SHOW_ARM.right[self.pose] or
-			 NAME_SHOW_ARM.right[name]) and not
-			 NAME_HIDE_ARM.right[name]) then
+			NAME_SHOW_ARM.right[name]) and not
+			NAME_HIDE_ARM.right[name]) then
 		bone = self.entity:LookupBone("ValveBiped.Bip01_R_Upperarm")
 		if bone then
-			 self.entity:ManipulateBoneScale(bone, vector_origin)
-			 self.entity:ManipulateBonePosition(bone, Vector(0, 0, 128))
+			self.entity:ManipulateBoneScale(bone, vector_origin)
+			self.entity:ManipulateBonePosition(bone, Vector(0, 0, 128))
 		end
 	end
 	if self.apiBoneHide["l_leg"] then
 		bone = self.entity:LookupBone("ValveBiped.Bip01_L_Thigh")
 		if bone then
-			 self.entity:ManipulateBoneScale(bone, vector_origin)
-			 self.entity:ManipulateBonePosition(bone, Vector(0, 0, -128))
+			self.entity:ManipulateBoneScale(bone, vector_origin)
+			self.entity:ManipulateBonePosition(bone, Vector(0, 0, -128))
 		end
 	end
 	if self.apiBoneHide["r_leg"] then
 		bone = self.entity:LookupBone("ValveBiped.Bip01_R_Thigh")
 		if bone then
-			 self.entity:ManipulateBoneScale(bone, vector_origin)
-			 self.entity:ManipulateBonePosition(bone, Vector(0, 0, -128))
+			self.entity:ManipulateBoneScale(bone, vector_origin)
+			self.entity:ManipulateBonePosition(bone, Vector(0, 0, -128))
 		end
 	end
 
