@@ -290,9 +290,27 @@ local NAME_SHOW_ARM = {
 
 local NAME_HIDE_ARM = {
 	left = {
+		--[[		Compatibilty for Modern Warfare 2019 SWEPs - Pistols
+			https://steamcommunity.com/sharedfiles/filedetails/?id=2459723892 ]]
+		mg_357 = true,
+		mg_deagle = true,
+		mg_p320 = true,
+		mg_m1911 = true,
+		mg_makarov = true,
+		mg_m9 = true,
+		mg_glock = true,
 	},
 	right = {
 		weapon_bugbait = true,
+		--[[		Compatibilty for Modern Warfare 2019 SWEPs - Pistols
+			https://steamcommunity.com/sharedfiles/filedetails/?id=2459723892 ]]
+		mg_357 = true,
+		mg_deagle = true,
+		mg_p320 = true,
+		mg_m1911 = true,
+		mg_makarov = true,
+		mg_m9 = true,
+		mg_glock = true,
 	},
 }
 
