@@ -21,7 +21,7 @@ Enhanced Camera *can*:
 
 Enhanced Camera *can not*:
 
-* Work 100% of the time if models have broken paths unless the optional serverside component is installed, though it works most of the time
+* Work 100% of the time if models have broken paths, though it works most of the time
 * Show your PAC3 customizations
 * Show your shadow (you can use `cl_drawownshadow` if you want, but it won't match your first person body or show your weapon's shadow)
 
