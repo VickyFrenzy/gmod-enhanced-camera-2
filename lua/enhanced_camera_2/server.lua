@@ -84,13 +84,15 @@ local function UpdateViewOffset(ply)
 
 	if bone then
 
-		pos = ply:GetBonePosition(bone)
+		local plyPos = ply:GetPos()
 
-		if pos == ply:GetPos() then
-			pos = ply:GetBoneMatrix(bone):GetTranslation()
+		pos = ply:GetBonePosition(bone) or pos
+
+		if pos == plyPos then
+			pos = ply:GetBoneMatrix(bone):GetTranslation() or pos
 		end
 
-		pos = pos - ply:GetPos()
+		pos = pos - plyPos
 
 		height = math.Round(pos.z + 14, 2)
 
