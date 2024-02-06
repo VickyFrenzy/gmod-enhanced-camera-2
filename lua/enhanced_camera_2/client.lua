@@ -186,7 +186,7 @@ function EnhancedCameraTwo:GetPose()
 		return "drive"
 	end
 	local pose = string.sub(seqname, (string.find(seqname, "_") or 0) + 1)
-	pose = (wep and wep.DefaultHoldType) or pose
+	pose = string.lower((wep and wep.DefaultHoldType) or pose)
 	if string.find(pose, "all") then
 		return "normal"
 	elseif pose == "smg1" then
