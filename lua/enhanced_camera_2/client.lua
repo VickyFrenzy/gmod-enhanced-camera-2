@@ -1,5 +1,7 @@
 local cvarEnabled = CreateConVar("cl_ec2_enabled", 1, {FCVAR_CLIENTCMD_CAN_EXECUTE, FCVAR_ARCHIVE}, "Show your body in first-person")
 local cvarHair = CreateConVar("cl_ec2_showhair", 1, {FCVAR_CLIENTCMD_CAN_EXECUTE, FCVAR_ARCHIVE}, "Show your hair (bones attached to head) in first-person")
+local cvarHideLeftArm = CreateConVar("cl_ec2_hide_left_arm", 0, {FCVAR_CLIENTCMD_CAN_EXECUTE, FCVAR_ARCHIVE}, "Always hide your left arm")
+local cvarHideRightArm = CreateConVar("cl_ec2_hide_right_arm", 0, {FCVAR_CLIENTCMD_CAN_EXECUTE, FCVAR_ARCHIVE}, "Always hide your right arm")
 local cvarVehicle = CreateConVar("cl_ec2_vehicle", 1, {FCVAR_CLIENTCMD_CAN_EXECUTE, FCVAR_ARCHIVE}, "Show your body while in vehicles")
 local cvarVehicleYawLock = CreateConVar("cl_ec2_vehicle_yawlock", 1, {FCVAR_CLIENTCMD_CAN_EXECUTE, FCVAR_ARCHIVE}, "Restrict yaw while in vehicles to prevent looking backwards at your neck. Yaw is not restricted regardless of this setting if either \"cl_ec2_enabled\" or \"cl_ec2_vehicle\" is 0.")
 local cvarVehicleYawLockMax = CreateConVar("cl_ec2_vehicle_yawlock_max", 65, {FCVAR_CLIENTCMD_CAN_EXECUTE, FCVAR_ARCHIVE}, "Angle (in degrees) you can look away from the center view of a vehicle when \"cl_ec2_vehicle_yawlock\" is 1.")
@@ -332,7 +334,7 @@ function EnhancedCameraTwo:OnPoseChange()
 			self.entity:ManipulateBonePosition(bone, Vector(-128, 128, 0))
 		end
 	end
-	if self.apiBoneHide["l_arm"] or self.reloading or not (
+	if self.apiBoneHide["l_arm"] or self.reloading or cvarHideLeftArm:GetBool() or not (
 			(POSE_SHOW_ARM.left[self.pose] or
 			NAME_SHOW_ARM.left[name]) and not
 			NAME_HIDE_ARM.left[name]) then
@@ -342,7 +344,7 @@ function EnhancedCameraTwo:OnPoseChange()
 			self.entity:ManipulateBonePosition(bone, Vector(0, 0, -128))
 		end
 	end
-	if self.apiBoneHide["r_arm"] or self.reloading or not (
+	if self.apiBoneHide["r_arm"] or self.reloading or cvarHideRightArm:GetBool() or not (
 			(POSE_SHOW_ARM.right[self.pose] or
 			NAME_SHOW_ARM.right[name]) and not
 			NAME_HIDE_ARM.right[name]) then
@@ -569,6 +571,12 @@ hook.Add("PopulateToolMenu", "EnhancedCameraTwo:PopulateToolMenu", function()
 
 		panel:CheckBox("Show hair", "cl_ec2_showhair")
 		panel:ControlHelp("Show your hair (bones attached to head) in first-person")
+
+		panel:CheckBox("Hide your left arm", "cl_ec2_hide_left_arm")
+		panel:ControlHelp("Always hide your left arm")
+
+		panel:CheckBox("Hide your right arm", "cl_ec2_hide_right_arm")
+		panel:ControlHelp("Always hide your right arm")
 
 		panel:CheckBox("Show body in vehicles", "cl_ec2_vehicle")
 		panel:ControlHelp("Show your body while in vehicles")

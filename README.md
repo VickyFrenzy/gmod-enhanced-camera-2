@@ -37,6 +37,12 @@ _All of these options can be configured in the Options tab._
 * `cl_ec2_showhair`
   * `1` (Default): Show your hair (bones attached to head) in first-person
   * `0`: Hide your hair in first-person
+* `cl_ec2_hide_left_arm`
+  * `0` (Default): Your left arm will be present according to the context
+  * `1`: Always hide your left arm
+* `cl_ec2_hide_right_arm`
+  * `0` (Default): Your right arm will be present according to the context
+  * `1`: Always hide your right arm
 * `cl_ec2_vehicle`
   * `1` (Default): Show your body while in vehicles
   * `0`: Hide your body while in vehicles
